@@ -35,7 +35,7 @@ const ports = await availablePorts();
 
 <!----------------------------------------------------------------------------->
 
-[Usage]: Documentation/Usage.md
+[Usage]: ../../Documentation/Usage.md
 
 
 <!---------------------------------[ Buttons ]--------------------------------->
