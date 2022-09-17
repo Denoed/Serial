@@ -6,6 +6,7 @@ import { fromFileUrl , dirname , join }
 from 'https://deno.land/std@0.156.0/path/mod.ts'
 
 import Definitions from './Definitions.js'
+import Commands from './Commands.js'
 
 
 const { dlopen , errors } = Deno;
@@ -52,7 +53,7 @@ export async function portInfo ( file ){
 
     const data = new Uint8Array(72);
 
-    const success = await Native.deviceCall(file,21534,data) + 1;
+    const success = await Native.deviceCall(file,Commands.QuerySerial,data) + 1;
 
     const error = await Native.exception();
 
