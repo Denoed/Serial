@@ -23,5 +23,11 @@ export default {
         nonblocking : false ,
         parameters : [] ,
         result : 'i32'
+    },
+
+    deviceCall : {
+        nonblocking : true ,
+        parameters : [ 'i32' , 'u64' , 'buffer' ] ,
+        result : 'i32'
     }
 }

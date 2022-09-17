@@ -52,15 +52,23 @@ export async function portInfo ( file ){
 
     const data = new Uint8Array(72);
 
-    let [ result , error ] = await
-        tryUninterrupted(Native.serialInfo,file,data);
+    const success = await Native.deviceCall(file,21534,data) + 1;
 
-    result = (result)
-        ? data
-        : null ;
+    const error = await Native.exception();
 
-    return [ result , error ];
+    if(success)
+        return [ data , error ];
 
+    return [ -1 , error ];
+}
+
+
+/*
+ *  IOCTL | Instruct a device driver
+ */
+
+export async function deviceCall ( file , command , data ){
+    return Native.deviceCall(file,command,data);
 }
 
 
