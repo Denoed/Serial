@@ -31,7 +31,7 @@ const ports = await availablePorts();
 
 <!----------------------------------------------------------------------------->
 
-[Usage]: ../../Documentation/Usage.md
+[Usage]: https://github.com/Denoed/Serial/blob/main/Documentation/Usage.md
 
 
 <!---------------------------------[ Buttons ]--------------------------------->
