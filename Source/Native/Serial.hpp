@@ -3,6 +3,7 @@
 
 
 using IOCommand = unsigned long;
+using Path = const char *;
 using File = int;
 
 

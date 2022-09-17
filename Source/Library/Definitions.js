@@ -1,25 +1,19 @@
 
 export default {
 
-    serialInfo : {
+    openPort : {
         nonblocking : true ,
-        parameters : [ 'i32' , 'buffer' , 'buffer' ] ,
+        parameters : [ 'buffer' ] ,
         result : 'i32'
     },
 
-    openSerialPort : {
-        nonblocking : true ,
-        parameters : [ 'buffer' , 'buffer' ] ,
-        result : 'i32'
-    },
-
-    closeSerialPort : {
+    closePort : {
         nonblocking : false ,
-        parameters : [ 'i32' , 'buffer' ] ,
+        parameters : [ 'i32' ] ,
         result : 'i32'
     },
 
-    exception : {
+    error : {
         nonblocking : false ,
         parameters : [] ,
         result : 'i32'

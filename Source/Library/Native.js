@@ -2,21 +2,17 @@
 import { Buffer , BufReader , readShort }
 from 'https://deno.land/std@0.156.0/io/mod.ts'
 
-import { fromFileUrl , dirname , join }
-from 'https://deno.land/std@0.156.0/path/mod.ts'
-
 import Definitions from './Definitions.js'
 import Commands from './Commands.js'
+import * as Paths from './Paths.js'
 
 
 const { dlopen , errors } = Deno;
 const { Interrupted } = errors;
 
-const
-    folder = dirname(fromFileUrl(import.meta.url)) ,
-    serial = join(folder,'Serial.so') ;
+const { symbols : Native } =
+    dlopen(Paths.sharedLibrary,Definitions);
 
-const { symbols : Native } = dlopen(serial,Definitions);
 
 
 const cString = ( string ) =>
@@ -32,7 +28,7 @@ export async function openPort ( port ){
 
     const bytes = cString(port);
 
-    return await tryUninterrupted(Native.openSerialPort,bytes);
+    return await tryUninterrupted(Native.openPort,bytes);
 }
 
 
@@ -41,7 +37,7 @@ export async function openPort ( port ){
  */
 
 export async function closeFile ( file ){
-    return await wrapError(Native.closeSerialPort,file);
+    return await wrapError(Native.closePort,file);
 }
 
 
@@ -55,7 +51,7 @@ export async function portInfo ( file ){
 
     const success = await Native.deviceCall(file,Commands.QuerySerial,data) + 1;
 
-    const error = await Native.exception();
+    const error = await Native.error();
 
     if(success)
         return [ data , error ];
@@ -72,21 +68,14 @@ export async function deviceCall ( file , command , data ){
     return Native.deviceCall(file,command,data);
 }
 
-
-async function bytesToNumber ( bytes ){
-    return await readShort(new BufReader(new Buffer(bytes)));
-}
-
 async function wrapError ( func , ... parameters ){
 
-    let
-        error = new Uint8Array(4) ,
-        value = func(...parameters,error) ;
+    let value = func(...parameters);
 
     if(value instanceof Promise)
         value = await value;
 
-    return [ value , await bytesToNumber(error) ]
+    return [ value , await Native.error() ]
 }
 
 /*

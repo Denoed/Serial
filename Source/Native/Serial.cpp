@@ -1,49 +1,26 @@
 #include "Serial.hpp"
 
-#include <string>
-#include <cstring>
-
 #include <sys/ioctl.h>
-#include <fcntl.h>
 #include <unistd.h>
-
-#include <cerrno>
+#include <fcntl.h>
+#include <string>
 
 
 extern "C" {
 
-    auto deviceCall ( File address , IOCommand command , uint8_t * parameter ) -> int {
+    int deviceCall ( File address , IOCommand command , uint8_t * parameter ){
         return ioctl( address , command , parameter );
     }
 
-
-    auto exception () -> int {
+    int error (){
         return errno;
     }
 
-    auto openSerialPort ( const char * path , uint8_t * error ) -> int {
-        auto result = open(path,O_RDWR | O_NOCTTY | O_NONBLOCK);
-        memcpy(error,& errno,sizeof(int));
-        return result;
+    int openPort ( Path address ){
+        return open(address,O_RDWR | O_NOCTTY | O_NONBLOCK);
     }
 
-    auto closeSerialPort ( int fileDesciptor , uint8_t * error ) -> int {
-        auto result = close(fileDesciptor);
-        memcpy(error,& errno,sizeof(int));
-        return result;
-    }
-
-    auto serialInfo ( File address , uint8_t * info , uint8_t * error ) -> int {
-
-        uint8_t data [72];
-
-        if(ioctl(address,TIOCGSERIAL,& data) == -1){
-            memcpy(error,& errno,sizeof(int));
-            return -1;
-        }
-
-        memcpy(info,& data,sizeof(data));
-
-        return true;
+    int closePort ( File address ){
+        return close(address);
     }
 }
