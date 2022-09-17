@@ -4,11 +4,12 @@ const {
     AddrInUse , ConnectionAborted , AddrNotAvailable ,
     ConnectionRefused , ConnectionReset , AlreadyExists ,
     Interrupted , OutOfMemory , Unsupported , NotConnected ,
-    BrokenPipe , TimedOut
+    BrokenPipe , TimedOut , InvalidInput
 } = Deno.errors;
 
 
-export default Errors = {
+export default {
+
       1 : PermissionDenied ,
       2 : NotFound ,
       3 : NotFound ,
@@ -22,7 +23,7 @@ export default Errors = {
      // 11 : TryAgain_OperationWouldBlock ,
      12 : OutOfMemory ,
      13 : PermissionDenied ,
-     14 : BadAddress ,
+     // 14 : BadAddress ,
      // 15 : BlockDeviceRequired ,
      // 16 : DeviceOrResourceBusy ,
      17 : AlreadyExists ,

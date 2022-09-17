@@ -1,14 +1,13 @@
 
-import { Buffer , BufReader , readShort }
-from 'https://deno.land/std@0.156.0/io/mod.ts'
-
 import Definitions from './Definitions.js'
 import Commands from './Commands.js'
+import Errors from './Errors.js'
 import * as Paths from './Paths.js'
 
 
 const { dlopen , errors } = Deno;
 const { Interrupted } = errors;
+const { log } = console;
 
 const { symbols : Native } =
     dlopen(Paths.sharedLibrary,Definitions);
@@ -20,6 +19,28 @@ const cString = ( string ) =>
         .encode(string);
 
 
+function exception (){
+
+    const error = Native.error();
+
+    const exception = (error in Errors)
+        ? new Errors[error]
+        : new Error(`System Error : ${ error }`) ;
+
+    exception.stack = exception.stack
+        .split('\n')
+        .filter((_,index) => index !== 1)
+        .join('\n');
+
+    return exception;
+
+    // if(error in Errors)
+    //     return new Errors[error];
+    //
+    // return new Error(`System Error : ${ error }`);
+}
+
+
 /*
  *  Try to open a serial port.
  */
@@ -28,7 +49,13 @@ export async function openPort ( port ){
 
     const bytes = cString(port);
 
-    return await tryUninterrupted(Native.openPort,bytes);
+    const [ file , error ] = await
+        retry(Native.openPort,bytes);
+
+    if(file < 0)
+        throw error;
+
+    return file;
 }
 
 
@@ -36,8 +63,14 @@ export async function openPort ( port ){
  *  Close a file.
  */
 
-export async function closeFile ( file ){
-    return await wrapError(Native.closePort,file);
+export function closeFile ( file ){
+
+    const success = Native.closePort(file) + 1;
+
+    if(success)
+        return;
+
+    throw exception();
 }
 
 
@@ -49,14 +82,13 @@ export async function portInfo ( file ){
 
     const data = new Uint8Array(72);
 
-    const success = await Native.deviceCall(file,Commands.QuerySerial,data) + 1;
+    const [ success , error ] = await
+        retry(deviceCall,file,Commands.QuerySerial,data);
 
-    const error = await Native.error();
+    if(success !== -1)
+        return data;
 
-    if(success)
-        return [ data , error ];
-
-    return [ -1 , error ];
+    throw error;
 }
 
 
@@ -68,27 +100,20 @@ export async function deviceCall ( file , command , data ){
     return Native.deviceCall(file,command,data);
 }
 
-async function wrapError ( func , ... parameters ){
-
-    let value = func(...parameters);
-
-    if(value instanceof Promise)
-        value = await value;
-
-    return [ value , await Native.error() ]
-}
 
 /*
  *  Continuosly try calling the
  *  function if it is interrupted.
  */
 
-async function tryUninterrupted ( ... args ){
+async function retry ( func , ... parameters ){
 
-    let value , error ;
+    let result , error ;
 
-    do { [ value , error ] = await wrapError(...args); }
-    while ( value === -1 && error === Interrupted );
+    do {
+        result = await func(...parameters);
+        error = exception();
+    } while ( result < 0 && error instanceof Interrupted );
 
-    return [ value , error ];
+    return [ result , error ];
 }

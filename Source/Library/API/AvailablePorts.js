@@ -2,7 +2,7 @@
 import { allPorts } from '../Ports.js'
 import * as Serial from '../Native.js'
 
-
+const { NotFound } = Deno.errors;
 const { log } = console;
 
 
@@ -26,30 +26,28 @@ export default async function listPorts (){
 
 async function isAvailable ( port ){
 
-    const [ file ] = await Serial.openPort(port);
-
-    if(file < 1)
-        return false;
-
     try {
 
-        const [ data , error ] = await Serial.portInfo(file);
+        const file = await Serial.openPort(port);
 
-        // log('Info',port,data,error,exception());
+        try {
 
-        if(data)
+            await Serial.portInfo(file);
             return true;
 
-        throw `Unknown IOCTL Serial Reading Error : ${ error }`;
+        } catch (error) {
 
-    } catch (exception) {
+            error.stack = 'IOCTL Serial Reading Error\n' + error.stack;
+            throw error;
 
-        const [ result , error ] = await
+        } finally {
             Serial.closeFile(file);
+        }
+    } catch (error) {
 
-        if(result !== 0)
-            throw `Wasn't able to close Serial Port file descriptor : ${ error }`;
+        if(error instanceof NotFound)
+            return false;
 
-        throw exception;
+        throw error;
     }
 }
