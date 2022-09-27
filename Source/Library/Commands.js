@@ -56,13 +56,36 @@ export default {
     //  TIOCSTI		0x5412
     //  TIOCGWINSZ	0x5413
     //  TIOCSWINSZ	0x5414
-    //  TIOCMGET	0x5415
-    //  TIOCMBIS	0x5416
-    //  TIOCMBIC	0x5417
-    //  TIOCMSET	0x5418
+
+    /**
+     *  Query the status of modem bits.
+     */
+
+    QueryModemBits : 0x5415 ,
+
+    /**
+     *  Set a modem bit.
+     */
+
+    SetModemBit : 0x5416 ,
+
+    /**
+     *  Clear a modem bit.
+     */
+
+    ClearModemBit : 0x5417 ,
+
+    /**
+     *  Update the status of modem bits.
+     */
+
+    UpdateModemBits : 0x5418 ,
+
     //  TIOCGSOFTCAR	0x5419
     //  TIOCSSOFTCAR	0x541A
-    //  FIONREAD	0x541B
+
+    AvailableBytes : 0x541B ,
+
     //  TIOCINQ		FIONREAD
     //  TIOCLINUX	0x541C
     //  TIOCCONS	0x541D
@@ -127,6 +150,5 @@ export default {
     //
     //  TIOCMIWAIT	0x545C	/* wait for a change on serial input line(s) */
     //  TIOCGICOUNT	0x545D	/* read serial port __inline__ interrupt counts */
-
 
 }

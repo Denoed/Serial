@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-ffi --allow-write --unstable
 
 
-import { availablePorts } from '../Source/Library/mod.ts'
+import * as Serial from '../Source/Library/mod.ts'
 
 const { clear , log } = console;
 
@@ -12,6 +12,14 @@ for(let i = 0;i < 10;i++)
     log('')
 
 
-const ports = await availablePorts();
+const port = await Serial.connect({
+    flowControl : null ,
+    baudRate : Serial.BaudRate.B115200 ,
+    charSize : 8 ,
+    stopBits : 1 ,
+    parity : null ,
+    path : '/dev/ttyUSB0'
+})
 
-log('Ports',ports);
+
+await port.close();

@@ -1,6 +1,6 @@
 
-
-import listPorts from './API/AvailablePorts.js'
+import AvailablePorts from './API/AvailablePorts.js'
+import Connect from './API/Connect.js'
 
 
 /**
@@ -9,7 +9,18 @@ import listPorts from './API/AvailablePorts.js'
  */
 
 export async function availablePorts () : Promise < string [] > {
-    return listPorts() as Promise < string [] >;
+    return AvailablePorts () as Promise < string [] >;
+}
+
+
+/**
+ *  Try to connect to a serial port.
+ *  @param options How & whereto connect.
+ *  @return A serial object for futher interaction.
+ */
+
+export async function connect ( options : object ) : Promise < object > {
+    return Connect ( options ) as Promise < object >;
 }
 
 
@@ -17,5 +28,3 @@ export { FlowControl } from './Helper/FlowControl.ts'
 export { BaudRate } from './Helper/BaudRate.ts'
 export { Parity } from './Helper/Parity.ts'
 
-import SerialPort from './SerialPort.js'
-export { SerialPort } 
