@@ -20,6 +20,11 @@ extern "C" {
     }
 
 
+    int readBytes ( File address , uint8_t * buffer , size_t byteCount ){
+        return read( address , buffer , byteCount );
+    }
+
+
     int error (){
         return errno;
     }
@@ -44,15 +49,9 @@ extern "C" {
         return tcdrain( address );
     }
 
-    int Terminal_flushInput ( File address ){
-        return tcflush( address , TCIFLUSH );
-    }
 
-    int Terminal_flushOutput ( File address ){
-        return tcflush( address , TCOFLUSH );
-    }
 
-    int Terminal_flush ( File address ){
+    int Terminal_flush ( File address , uint8_t type ){
         return tcflush( address , TCIOFLUSH );
     }
 
@@ -125,31 +124,11 @@ extern "C" {
         return settings -> c_ospeed;
     }
 
-
-    termios * Termios (
-        tcflag_t inputMode ,
-        tcflag_t outputMode ,
-        tcflag_t controlMode ,
-        tcflag_t localMode ,
-        cc_t lineDiscipline ,
-        cc_t * controlCharacters ,
-        speed_t inputSpeed ,
-        speed_t outputSpeed
-    ){
-        const auto settings = new termios {};
-        settings -> c_iflag = inputMode;
-        settings -> c_oflag = outputMode;
-        settings -> c_cflag = controlMode;
-        settings -> c_lflag = localMode;
-        settings -> c_line = lineDiscipline;
-        * settings -> c_cc = * controlCharacters;
-        settings -> c_ispeed = inputSpeed;
-        settings -> c_ospeed = outputSpeed;
-
-        return settings;
+    uint32_t Termios_getLocalFlags ( termios * settings ){
+        return settings -> c_lflag;
     }
 
-
-
-
+    unsigned char Termios_getLine ( termios * settings ){
+        return settings -> c_line;
+    }
 }

@@ -1,14 +1,15 @@
 
-import ControlCharacter from './ControlCharacter.js'
-import FileCommand from './FileCommand.js'
-import ControlFlag from './ControlFlag.js'
-import FileStatus from './FileStatus.js'
-import InputFlag from './InputFlag.js'
-import ModemLine from './ModemLine.js'
+import ControlCharacter from './Enums/ControlCharacter.js'
+import FileCommand from './Enums/FileCommand.js'
+import ControlFlag from './Enums/ControlFlag.js'
+import FileStatus from './Enums/FileStatus.js'
+import InputFlag from './Enums/InputFlag.js'
+import ModemLine from './Enums/ModemLine.js'
 import Settings from './Settings.js'
 
 import {
-    flushIO , modifyFile , deviceCall
+    flushIO , flushInput as flushI , modifyFile , deviceCall ,
+     closeFile , availableBytes , readBytes as readB
 } from './Native.js'
 
 
@@ -21,21 +22,44 @@ const { log } = console;
 export default class SerialPort {
 
     #pointer;
+    #backup;
+    #transmissionDelay = 0;
 
-    constructor ( pointer ){
+    constructor ( pointer , backup ){
         this.#pointer = pointer;
         log('Constructor',this.#pointer,pointer);
     }
 
 
 
-    close (){
+    async close (){
 
-        for(const method of [ 'open' , 'close' ])
-            invalidateFunction(this,method);
+        try {
 
-        for(const method of [ 'baudRate' , 'charSize' , 'flowControl' ])
-            invalidateAccessor(this,method);
+            await this.#backup?.writeTo(this.#pointer);
+
+        } catch ( error ){
+            console.error('Failed to restore port settings',error);
+        } finally {
+            closeFile(this.#pointer);
+        }
+        //
+        // for(const method of [ 'open' , 'close' ])
+        //     invalidateFunction(this,method);
+        //
+        // for(const method of [ 'baudRate' , 'charSize' , 'flowControl' ])
+        //     invalidateAccessor(this,method);
+    }
+
+
+    async isDataAvailable (){
+        const count = await availableBytes(this.#pointer);
+        log('Count',count);
+        return count > 0;
+    }
+
+    async flushInput (){
+        await flushI(this.#pointer);
     }
 
     async settings ( modifyFunction ){
@@ -63,36 +87,43 @@ export default class SerialPort {
 
     async setBaudRate ( rate ){
 
-        log('SetBaud',this.#pointer);
+        log('SetBaud',this.#pointer,rate);
 
         await this.settings(async (settings) => {
             settings.speed = rate;
         })
 
+        this.#transmissionDelay = (8 * 10e6) / rate;
     }
 
     async charSize (){
 
         const { controlFlags } = await this.settings();
 
-        return (controlFlags & ControlFlag.Size);
+        return (controlFlags & ControlFlag.CharacterSize);
     }
 
     async setCharSize ( size ){
 
+        if(size < 5 || size > 8)
+            throw 'Character Size has to be in the range of 5 - 8 bits';
+
+        size -= 5;
+        size <<= 5;
+
         await this.settings(async (settings) => {
 
-            let { inputFlags , outputFlags } = settings;
+            let { inputFlags , controlFlags } = settings;
 
-            outputFlags &= ~ ControlFlag.Size;
-            outputFlags |= size;
+            controlFlags &= ~ ControlFlag.CharacterSize;
+            controlFlags |= size;
 
-             if(size === 48)
+             if(size === ControlCharacter.CharacterSize)
                  inputFlags &= ~ InputFlag.Strip;
              else
                  inputFlags |= InputFlag.Strip;
 
-             settings.outputFlags = outputFlags;
+             settings.controlFlags = controlFlags;
              settings.inputFlags = inputFlags;
         })
     }
@@ -102,8 +133,8 @@ export default class SerialPort {
         const { inputFlags , controlFlags } = await this.settings();
 
         const
-            togglableOutput = (inputFlags & InputFlag.ToggelableOutput) ,
-            togglableInput = (inputFlags & InputFlag.ToggelableInput) ;
+            togglableOutput = (inputFlags & InputFlag.OutputFlowControl) ,
+            togglableInput = (inputFlags & InputFlag.InputFlowControl) ;
 
         if(
             togglableOutput && togglableInput &&
@@ -133,7 +164,7 @@ export default class SerialPort {
             switch(flow){
             case 'hardware' :
 
-                inputFlags &= ~ ( InputFlag.TogglableInput | InputFlag.ToggelableOutput );
+                inputFlags &= ~ ( InputFlag.InputFlowControl | InputFlag.OutputFlowControl );
                 controlFlags |= 20000000000;
                 settings.controlChar(ControlCharacter.Start,0x0);
                 settings.controlChar(ControlCharacter.Stop,0x0);
@@ -141,14 +172,14 @@ export default class SerialPort {
                 break;
             case 'software' :
 
-                inputFlags |= InputFlag.TogglableInput | InputFlag.ToggelableOutput;
+                inputFlags |= InputFlag.InputFlowControl | InputFlag.OutputFlowControl;
                 controlFlags &= ~ 20000000000;
                 settings.controlChar(ControlCharacter.Start,0x11);
                 settings.controlChar(ControlCharacter.Stop,0x13);
 
                 break;
             default:
-                inputFlags &= ~ ( InputFlag.TogglableInput | InputFlag.ToggelableOutput );
+                inputFlags &= ~ ( InputFlag.InputFlowControl | InputFlag.OutputFlowControl );
                 controlFlags &= ~ 20000000000;
             }
 
@@ -211,31 +242,29 @@ export default class SerialPort {
         const settings = await Settings.of(this.#pointer);
         const { controlFlags } = settings;
 
-        return (controlFlags & ControlFlag.StopBit)
+        return (controlFlags & ControlFlag.DoubleStopBits)
             ? 2 : 1 ;
     }
 
-    async setStopBits ( bits ){
-
-        if(![ 1 , 2 ].includes(bits))
-            throw 'Only 1 or 2 stop bits can be used.';
+    async useDoubleStopBits ( state ){
 
         const settings = await this.settings();
         let { controlFlags } = settings;
 
-        if(bits === 1)
-            controlFlags &= ~ ControlFlag.StopBit;
+        if(state)
+            controlFlags |=   ControlFlag.DoubleStopBits;
         else
-            controlFlags |=   ControlFlag.StopBit;
+            controlFlags &= ~ ControlFlag.DoubleStopBits;
 
         settings.controlFlags = controlFlags;
         await settings.writeTo(this.#pointer);
     }
 
     async vMin (){
-        return await Settings
-            .of(this.#pointer)
-            .vmin;
+        return await this.settings().vmin;
+        // return await Settings
+        //     .of(this.#pointer)
+        //     .vmin;
     }
 
     async setVMin ( minimum ){
@@ -249,9 +278,10 @@ export default class SerialPort {
     }
 
     async vTime (){
-        return await Settings
-            .of(this.#pointer)
-            .vtime;
+        return await this.settings().vtime;
+        // return await Settings
+        //     .of(this.#pointer)
+        //     .vtime;
     }
 
     async setVTime ( time ){
@@ -329,6 +359,98 @@ export default class SerialPort {
 
     async #queryFileStatus(){
         return await modifyFile(this.#pointer,FileCommand.QueryStatus,0);
+    }
+
+    async readByte ( timeout = 1000 ){
+
+        const start = Date.now();
+
+        const delay = this.#transmissionDelay;
+        const pointer = this.#pointer;
+
+        const buffer = new Uint8Array(1);
+
+        return new Promise((resolve,reject) => {
+
+            async function read (){
+
+                const readCount = await readB(pointer,buffer,1);
+
+                if(readCount === 1)
+                    resolve(buffer);
+
+                const delta = Date.now() - start;
+
+                if(delta > timeout){
+                    reject(new Deno.errors.TimedOut('Data didn\'t arrive in time.'));
+                    return;
+                }
+
+                setTimeout(read,delay);
+            }
+
+            try {
+                read();
+            } catch (error) {
+                reject(error);
+            }
+
+        });
+
+        return buffer;
+    }
+
+
+    async printSettings (){
+
+        const settings = await this.settings();
+
+        log(`
+            Control Flags
+            =============
+
+            Character Size   : ${ settings.characterSize }
+            Double Stop Bits : ${ settings.doubleStopBits }
+            Read             : ${ settings.canRead }
+            Parity           : ${ settings.usesParity }
+            Odd Parity       : ${ settings.oddParity }
+            Hangs Up         : ${ settings.hangsUp }
+            Local            : ${ settings.isLocal }
+
+            Input Flags
+            ===========
+
+            Ignore Breaks              : ${ settings.input_IgnoreBreaks }
+            Interrupt On Break         : ${ settings.input_InterruptOnBreak }
+            Ignore Errors              : ${ settings.input_IgnoreErrors }
+            Mark Errors                : ${ settings.input_MarkErrors }
+            Check Parity               : ${ settings.input_CheckParity }
+            Strip Last Bit             : ${ settings.input_StripLastBit }
+            Newline to Carriege Return : ${ settings.input_NewlineToCarriegeReturn }
+            Ignore Carriege Return     : ${ settings.input_IgnoreCarriegeReturn }
+            Carriege Return To Newline : ${ settings.input_CarriegeReturnToNewline }
+            UpperCase To LowerCase     : ${ settings.input_UpperCaseToLowerCase }
+            Output Flow Control        : ${ settings.input_OutputFlowControl }
+            Any Char Restarts          : ${ settings.input_AnyCharRestarts }
+            Input Flow Control         : ${ settings.input_InputFlowControl }
+            Bell On Full Queue         : ${ settings.input_BellOnFullQueue }
+            UTF8                       : ${ settings.input_UTF8 }
+
+            Flags
+            =====
+            Output: ${ settings.outputFlags }
+            Local: ${ settings.localFlags }
+
+            Speed
+            =====
+            Output : ${ settings.outputSpeed }
+            Input : ${ settings.inputSpeed }
+
+            line : ${ settings.line }
+
+            VTime : ${ settings.vtime }
+            VMin : ${ settings.vmin }
+        `)
     }
 }
 

@@ -21,5 +21,44 @@ const port = await Serial.connect({
     path : '/dev/ttyUSB0'
 })
 
+try {
 
-await port.close();
+    await port.printSettings();
+
+    // await port.flushInput();
+    //
+    // let tries = 0;
+    //
+    // let a = false;
+    //
+    //
+    // await new Promise((resolve) => {
+    //     const i = setInterval(async () => {
+    //
+    //         tries++;
+    //
+    //         a = await port.isDataAvailable();
+    //
+    //         log('Data Available?',a);
+    //
+    //         if(a || tries > 200){
+    //             clearInterval(i);
+    //             resolve();
+    //         }
+    //
+    //     },10);
+    // });
+    //
+    // if(a){
+    //     let buffer = await port.readByte();
+    //     log('Buffer',buffer);
+    // }
+
+} catch ( error ){
+    throw error;
+} finally {
+
+    log('Closed');
+
+    await port.close();
+}

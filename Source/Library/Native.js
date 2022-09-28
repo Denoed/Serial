@@ -1,7 +1,7 @@
 
 import Definitions from './Definitions.js'
-import Commands from './Commands.js'
-import Errors from './Errors.js'
+import Commands from './Enums/Commands.js'
+import Errors from './Enums/Errors.js'
 import * as Paths from './Paths.js'
 
 
@@ -64,6 +64,18 @@ export async function openPort ( port ){
 }
 
 
+export async function readBytes ( file , buffer , byteCount ){
+
+    const [ readCount , error ] = await
+        retry(Native.readBytes,file,buffer,byteCount);
+
+    if(readCount < 0)
+        throw error;
+
+    return readCount;
+}
+
+
 /*
  *  Close a file.
  */
@@ -113,8 +125,19 @@ export async function exclusive ( file ){
 }
 
 
+
+export async function flushInput ( file ){
+    if(await Native.Terminal_flush(file,0) === -1)
+        throw exception();
+}
+
+export async function flushOutput ( file ){
+    if(await Native.Terminal_flush(file,1) === -1)
+        throw exception();
+}
+
 export async function flushIO ( file ){
-    if(await Native.Terminal_flush(file) === -1)
+    if(await Native.Terminal_flush(file,2) === -1)
         throw exception();
 }
 
