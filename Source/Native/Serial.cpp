@@ -86,6 +86,7 @@ extern "C" {
     }
 
     void Termios_setSpeed ( termios * settings , uint32_t speed ){
+        // cfsetspeed(settings,speed);
         settings -> c_ospeed = speed;
         settings -> c_ispeed = speed;
     }

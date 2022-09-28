@@ -7,6 +7,8 @@ import InputFlag from './Enums/InputFlag.js'
 import ModemLine from './Enums/ModemLine.js'
 import Settings from './Settings.js'
 
+import { BaudRate } from './Helper/BaudRate.ts'
+
 import {
     flushIO , flushInput as flushI , modifyFile , deviceCall ,
      closeFile , availableBytes , readBytes as readB
@@ -18,6 +20,42 @@ const { BadResource } = errors;
 const { log } = console;
 
 
+
+const baudRateType = {
+    4000000 : 4111 ,
+    3500000 : 4110 ,
+    3000000 : 4109 ,
+    2500000 : 4108 ,
+    2000000 : 4107 ,
+    1500000 : 4106 ,
+    1152000 : 4105 ,
+    1000000 : 4104 ,
+    921600 : 4103 ,
+    576000 : 4102 ,
+    500000 : 4101 ,
+    460800 : 4100 ,
+    230400 : 4099 ,
+    115200 : 4098 ,
+    57600 : 4097 ,
+    38400 : 15 ,
+    19200 : 14 ,
+    9600 : 13 ,
+    4800 : 12 ,
+    2400 : 11 ,
+    1800 : 10 ,
+    1200 : 9 ,
+    600 : 8 ,
+    300 : 7 ,
+    200 : 6,
+    150 : 5,
+    134 : 4,
+    110 : 3,
+    75 : 2,
+    50 : 1
+}
+
+
+const bitRateTypes = Object.fromEntries([...Object.entries(baudRateType)].map(([ a, b]) => [ b  , a ]));
 
 export default class SerialPort {
 
@@ -87,10 +125,10 @@ export default class SerialPort {
 
     async setBaudRate ( rate ){
 
-        log('SetBaud',this.#pointer,rate);
+        log('SetBaud',this.#pointer,rate,baudRateType[rate]);
 
         await this.settings(async (settings) => {
-            settings.speed = rate;
+            settings.speed = baudRateType[rate];
         })
 
         this.#transmissionDelay = (8 * 10e6) / rate;
@@ -443,8 +481,8 @@ export default class SerialPort {
 
             Speed
             =====
-            Output : ${ settings.outputSpeed }
-            Input : ${ settings.inputSpeed }
+            Output : ${ bitRateTypes[settings.outputSpeed] }
+            Input : ${ bitRateTypes[settings.inputSpeed] }
 
             line : ${ settings.line }
 

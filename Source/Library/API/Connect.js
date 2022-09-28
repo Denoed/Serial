@@ -6,6 +6,7 @@ import {
 
 import SerialPort from '../SerialPort.js'
 import Settings from '../Settings.js'
+import { BaudRate } from '../Helper/BaudRate.ts'
 
 const { log } = console;
 
@@ -68,7 +69,8 @@ async function setDefaults ( file ){
     await settings.writeTo(file);
 
     const port = new SerialPort(file);
-    await port.setBaudRate(115200);
+    // port.printSettings();
+    await port.setBaudRate(BaudRate.B9600);
     await port.setCharSize(8);
     await port.setFlowControl(null);
     await port.setParity(null);
