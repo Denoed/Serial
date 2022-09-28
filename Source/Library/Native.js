@@ -4,6 +4,7 @@ import Commands from './Enums/Commands.js'
 import Errors from './Enums/Errors.js'
 import * as Paths from './Paths.js'
 
+import { OperationWouldBlock } from './Enums/Errors.js'
 
 const { dlopen , errors } = Deno;
 const { Interrupted } = errors;
@@ -14,6 +15,10 @@ const { UnsafePointer , UnsafePointerView } = Deno;
 const { symbols : Native } =
     dlopen(Paths.sharedLibrary,Definitions);
 
+
+export async function sleep ( micros ){
+    await Native.ssleep(micros);
+}
 
 
 const cString = ( string ) =>
@@ -64,12 +69,23 @@ export async function openPort ( port ){
 }
 
 
-export async function readBytes ( file , buffer , byteCount ){
+export async function readByte ( file , buffer , byteCount ){
 
     const [ readCount , error ] = await
-        retry(Native.readBytes,file,buffer,byteCount);
+        retry(Native.readByte,file,buffer,byteCount);
 
     if(readCount < 0)
+        throw error;
+
+    return readCount;
+}
+
+export async function readBytes ( file , pointer , byteCount ){
+
+    const [ readCount , error ] = await
+        retry(Native.readBytes,file,pointer,byteCount);
+
+    if(readCount < 0 && !(error instanceof OperationWouldBlock))
         throw error;
 
     return readCount;

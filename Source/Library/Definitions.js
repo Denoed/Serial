@@ -13,9 +13,21 @@ const termios_get = (type) =>
 
 export default {
 
-    readBytes : {
+    ssleep : {
+        nonblocking : true ,
+        parameters : [ 'u32' ] ,
+        result : 'void'
+    },
+
+    readByte : {
         nonblocking : true ,
         parameters : [ 'i32' , 'buffer' , 'u32' ] ,
+        result : 'i32'
+    },
+
+    readBytes : {
+        nonblocking : true ,
+        parameters : [ 'i32' , 'pointer' , 'u32' ] ,
         result : 'i32'
     },
 

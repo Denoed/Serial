@@ -8,6 +8,10 @@ const {
 } = Deno.errors;
 
 
+export class OperationWouldBlock extends Error {
+
+}
+
 export default {
 
       1 : PermissionDenied ,
@@ -20,6 +24,7 @@ export default {
       // 8 : ExecutableFormatError ,
       // 9 : BadFileNumber ,
      10 : NotFound ,
+     11 : OperationWouldBlock ,
      // 11 : TryAgain_OperationWouldBlock ,
      12 : OutOfMemory ,
      13 : PermissionDenied ,

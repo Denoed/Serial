@@ -11,6 +11,11 @@
 
 extern "C" {
 
+
+    void ssleep ( uint32_t micros ){
+        usleep(micros);
+    }
+
     int deviceCall ( File address , IOCommand command , uint8_t * parameter ){
         return ioctl( address , command , parameter );
     }
@@ -19,6 +24,10 @@ extern "C" {
         return fcntl(address,command,parameter);
     }
 
+
+    int readByte ( File address , uint8_t * buffer , size_t byteCount ){
+        return read( address , buffer , byteCount );
+    }
 
     int readBytes ( File address , uint8_t * buffer , size_t byteCount ){
         return read( address , buffer , byteCount );

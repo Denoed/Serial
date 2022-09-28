@@ -9,9 +9,11 @@ import Settings from './Settings.js'
 
 import { BaudRate } from './Helper/BaudRate.ts'
 
+import { sleep } from './Native.js'
+
 import {
     flushIO , flushInput as flushI , modifyFile , deviceCall ,
-     closeFile , availableBytes , readBytes as readB
+     closeFile , availableBytes , readByte as readB , readBytes as readBs
 } from './Native.js'
 
 
@@ -439,10 +441,44 @@ export default class SerialPort {
     }
 
 
+    async readBytes ( byteCount = 0 , timeout = 1000 ){
+
+
+        const bytes = new Uint8Array(byteCount);
+
+        let pointer = Deno.UnsafePointer.of(bytes);
+
+        let remaining = byteCount;
+
+
+        const start = Date.now();
+
+        while(remaining > 0){
+
+            const readCount = await readBs(this.#pointer,pointer,remaining);
+
+            remaining -= readCount;
+            pointer += readCount;
+
+
+            const delta = Date.now() - start;
+
+            if(delta > timeout){
+                reject(new Deno.errors.TimedOut('Data didn\'t arrive in time.'));
+                return;
+            }
+
+            await sleep(this.#transmissionDelay);
+        }
+
+        return bytes;
+    }
+
+
     async printSettings (){
 
         const settings = await this.settings();
-
+sleep
         log(`
             Control Flags
             =============
