@@ -401,46 +401,6 @@ export default class SerialPort {
         return await modifyFile(this.#pointer,FileCommand.QueryStatus,0);
     }
 
-    async readByte ( timeout = 1000 ){
-
-        const start = Date.now();
-
-        const delay = this.#transmissionDelay;
-        const pointer = this.#pointer;
-
-        const buffer = new Uint8Array(1);
-
-        return new Promise((resolve,reject) => {
-
-            async function read (){
-
-                const readCount = await readB(pointer,buffer,1);
-
-                if(readCount === 1)
-                    resolve(buffer);
-
-                const delta = Date.now() - start;
-
-                if(delta > timeout){
-                    reject(new Deno.errors.TimedOut('Data didn\'t arrive in time.'));
-                    return;
-                }
-
-                setTimeout(read,delay);
-            }
-
-            try {
-                read();
-            } catch (error) {
-                reject(error);
-            }
-
-        });
-
-        return buffer;
-    }
-
-
     async readBytes ( byteCount = 0 , timeout = 1000 ){
 
 

@@ -17,7 +17,17 @@ const { symbols : Native } =
 
 
 export async function sleep ( micros ){
-    await Native.ssleep(micros);
+    await Native.usleep(micros);
+}
+
+
+export function exportTermios ( settings ){
+
+    const bytes = new Uint8Array(57);
+
+    Native.exportTermios(settings,bytes);
+
+    return bytes;
 }
 
 

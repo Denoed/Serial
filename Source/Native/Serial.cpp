@@ -11,9 +11,15 @@
 
 extern "C" {
 
-
-    void ssleep ( uint32_t micros ){
-        usleep(micros);
+    void exportTermios ( termios * settings , uint8_t * data ){
+        memcpy( data +  0 , & settings -> c_iflag  ,  4 );
+        memcpy( data +  4 , & settings -> c_oflag  ,  4 );
+        memcpy( data +  8 , & settings -> c_cflag  ,  4 );
+        memcpy( data + 12 , & settings -> c_lflag  ,  4 );
+        memcpy( data + 16 , & settings -> c_ispeed ,  4 );
+        memcpy( data + 20 , & settings -> c_ospeed ,  4 );
+        memcpy( data + 24 , & settings -> c_line   ,  1 );
+        memcpy( data + 25 ,   settings -> c_cc     , 32 );
     }
 
     int deviceCall ( File address , IOCommand command , uint8_t * parameter ){
@@ -24,10 +30,6 @@ extern "C" {
         return fcntl(address,command,parameter);
     }
 
-
-    int readByte ( File address , uint8_t * buffer , size_t byteCount ){
-        return read( address , buffer , byteCount );
-    }
 
     int readBytes ( File address , uint8_t * buffer , size_t byteCount ){
         return read( address , buffer , byteCount );
@@ -57,8 +59,6 @@ extern "C" {
     int Terminal_drainBuffer ( File address ){
         return tcdrain( address );
     }
-
-
 
     int Terminal_flush ( File address , uint8_t type ){
         return tcflush( address , TCIOFLUSH );
@@ -95,7 +95,6 @@ extern "C" {
     }
 
     void Termios_setSpeed ( termios * settings , uint32_t speed ){
-        // cfsetspeed(settings,speed);
         settings -> c_ospeed = speed;
         settings -> c_ispeed = speed;
     }
