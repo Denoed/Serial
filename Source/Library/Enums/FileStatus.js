@@ -1,15 +1,18 @@
 
+import { mask as bit } from '../Misc/Bits.js'
+
+
 export default {
 
-    ReadOnly     : 0b0000000000000000 ,
+    ReadOnly     : 0 ,
 
-    WriteOnly    : 0b0000000000000001 ,
+    WriteOnly    : bit(0) ,
 
-    ReadAndWrite : 0b0000000000000010 ,
+    ReadAndWrite : bit(1) ,
 
-    AccessMode   : 0b0000000000000011 ,
+    AccessMode   : bit(0) | bit(1) ,
 
-    Append       : 0b0010000000000000 ,
+    Append       : bit(13) ,
 
-    NonBlocking  : 0b0100000000000000
+    NonBlocking  : bit(14)
 }

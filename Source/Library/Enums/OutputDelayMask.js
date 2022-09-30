@@ -1,8 +1,4 @@
 
-const bit = ( position ) =>
-    1 << position;
-
-
 export default {
 
     /**

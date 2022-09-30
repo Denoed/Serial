@@ -1,6 +1,5 @@
 
-const bit = ( position ) =>
-    1 << position;
+import { mask as bit } from '../Misc/Bits.js'
 
 
 export default {
@@ -9,12 +8,17 @@ export default {
      *  2 bit character size : 5 - 8 bits
      */
 
-    CharacterSize  : bit(5) | bit(4) ,
+    CharacterSize : bit(4)
+                  | bit(5) ,
 
     /**
      *  Baudrate
      */
 
-    Baudrate : bit(12) | bit(3) | bit(2) | bit(1) | bit(0)
+    Baudrate : bit(0)
+             | bit(1)
+             | bit(2)
+             | bit(3)
+             | bit(12)
 
 }

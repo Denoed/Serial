@@ -1,6 +1,5 @@
 
-const bit = ( position ) =>
-    1 << position;
+import { mask as bit } from '../Misc/Bits.js'
 
 
 export default {

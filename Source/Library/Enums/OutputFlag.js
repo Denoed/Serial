@@ -1,6 +1,5 @@
 
-const bit = ( position ) =>
-    1 << position;
+import { mask as bit } from '../Misc/Bits.js'
 
 
 export default {
@@ -9,20 +8,20 @@ export default {
      *  Implementation defined processing.
      */
 
-    PostProcess : bit(0) ,
+    PostProcess             : bit(0) ,
 
     /**
      *  Non-POSIX
      *  LowerCase -> UpperCase
      */
 
-    LowerToUpper : bit(1) ,
+    LowerToUpper            : bit(1) ,
 
     /**
      *  Prepend Carriege-Return before Newline.
      */
 
-    PrependCarriegeReturn : bit(2) ,
+    PrependCarriegeReturn   : bit(2) ,
 
     /**
      *  Carriege-Return -> Newline
@@ -34,25 +33,25 @@ export default {
      *  Don't output Carriege-Return for the 0th column.
      */
 
-    DelayCarriegeReturn : bit(4) ,
+    DelayCarriegeReturn     : bit(4) ,
 
     /**
      *  Doesn't output Carriege-Return.
      */
 
-    NoCarriegeReturn : bit(5) ,
+    NoCarriegeReturn        : bit(5) ,
 
     /**
      *  Delay by sending fill chars instead of waiting.
      */
 
-    DelayViaFill : bit(6) ,
+    DelayViaFill            : bit(6) ,
 
     /**
      *  Non-Linux
      *  Use char 177 instead of char 0 as fill char.
      */
 
-    FillIsDelete : bit(7)
+    FillIsDelete            : bit(7)
 
 }
