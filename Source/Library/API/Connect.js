@@ -44,7 +44,7 @@ export default async function connect ( options = {} ){
 }
 
 
-import InputFlag from '../Enums/InputFlag.js'
+import { InputFlag } from '../Enums/InputFlag.ts'
 import ControlFlag from '../Enums/ControlFlag.js'
 
 

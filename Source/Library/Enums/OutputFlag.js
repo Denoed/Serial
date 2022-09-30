@@ -1,0 +1,58 @@
+
+const bit = ( position ) =>
+    1 << position;
+
+
+export default {
+
+    /**
+     *  Implementation defined processing.
+     */
+
+    PostProcess : bit(0) ,
+
+    /**
+     *  Non-POSIX
+     *  LowerCase -> UpperCase
+     */
+
+    LowerToUpper : bit(1) ,
+
+    /**
+     *  Prepend Carriege-Return before Newline.
+     */
+
+    PrependCarriegeReturn : bit(2) ,
+
+    /**
+     *  Carriege-Return -> Newline
+     */
+
+    CarriegeReturnToNewline : bit(4) ,
+
+    /**
+     *  Don't output Carriege-Return for the 0th column.
+     */
+
+    DelayCarriegeReturn : bit(5) ,
+
+    /**
+     *  Doesn't output Carriege-Return.
+     */
+
+    NoCarriegeReturn : bit(6) ,
+
+    /**
+     *  Delay by sending fill chars instead of waiting.
+     */
+
+    DelayViaFill : bit(8) ,
+
+    /**
+     *  Non-Linux
+     *  Use char 177 instead of char 0 as fill char.
+     */
+
+    FillIsDelete : bit(9)
+
+}

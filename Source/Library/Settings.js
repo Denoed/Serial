@@ -11,8 +11,8 @@ const { symbols : Native } =
 
 
 import ControlFlag from './Enums/ControlFlag.js'
-import InputFlag from './Enums/InputFlag.js'
-import { exportTermios } from './Native.js'
+import { InputFlag } from './Enums/InputFlag.ts'
+import { readTermios } from './Native.js'
 
 
 import { updateTerminalSettings , queryTerminalSettings } from './Native.js'
@@ -26,6 +26,7 @@ function u32 ( bytes ){
          | bytes[3] << 24 ;
 }
 
+import decode from './Encoding/TermiosDecoder.js'
 
 export default class Settings {
 
@@ -33,14 +34,18 @@ export default class Settings {
     #pointer;
 
     static async of ( file ){
+
         const [ settings , pointer ] = await queryTerminalSettings(file);
 
-        const bytes = exportTermios(pointer);
+        // const bytes = readTermios(pointer);
+        //
+        // log('Settings btes',bytes);
+        //
+        // log('New',u32(bytes.subarray(8,12)));
 
-        log('Settings btes',bytes);
-
-        log('New',u32(bytes.subarray(8,12)));
-
+        const parsed = decode(pointer);
+        log(parsed);
+        log('New',parsed.flags.control);
 
         const s =  new Settings(settings,pointer);
 

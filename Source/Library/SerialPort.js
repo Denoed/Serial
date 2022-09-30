@@ -3,7 +3,7 @@ import ControlCharacter from './Enums/ControlCharacter.js'
 import FileCommand from './Enums/FileCommand.js'
 import ControlFlag from './Enums/ControlFlag.js'
 import FileStatus from './Enums/FileStatus.js'
-import InputFlag from './Enums/InputFlag.js'
+import { InputFlag } from './Enums/InputFlag.ts'
 import ModemLine from './Enums/ModemLine.js'
 import Settings from './Settings.js'
 

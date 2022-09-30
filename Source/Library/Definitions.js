@@ -19,7 +19,13 @@ export default {
         result : 'void'
     },
 
-    exportTermios : {
+    readTermios : {
+        nonblocking : false ,
+        parameters : [ 'pointer' , 'buffer' ] ,
+        result : 'void'
+    },
+
+    writeTermios : {
         nonblocking : false ,
         parameters : [ 'pointer' , 'buffer' ] ,
         result : 'void'

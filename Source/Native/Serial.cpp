@@ -8,10 +8,9 @@
 #include <string.h>
 
 
-
 extern "C" {
 
-    void exportTermios ( termios * settings , uint8_t * data ){
+    void readTermios ( termios * settings , uint8_t * data ){
         memcpy( data +  0 , & settings -> c_iflag  ,  4 );
         memcpy( data +  4 , & settings -> c_oflag  ,  4 );
         memcpy( data +  8 , & settings -> c_cflag  ,  4 );
@@ -20,6 +19,17 @@ extern "C" {
         memcpy( data + 20 , & settings -> c_ospeed ,  4 );
         memcpy( data + 24 , & settings -> c_line   ,  1 );
         memcpy( data + 25 ,   settings -> c_cc     , 32 );
+    }
+
+    void writeTermios ( termios * settings , uint8_t * data ){
+        memcpy( & settings -> c_iflag  , data +  0 ,  4 );
+        memcpy( & settings -> c_oflag  , data +  4 ,  4 );
+        memcpy( & settings -> c_cflag  , data +  8 ,  4 );
+        memcpy( & settings -> c_lflag  , data + 12 ,  4 );
+        memcpy( & settings -> c_ispeed , data + 16 ,  4 );
+        memcpy( & settings -> c_ospeed , data + 20 ,  4 );
+        memcpy( & settings -> c_line   , data + 24 ,  1 );
+        memcpy(   settings -> c_cc     , data + 25 , 32 );
     }
 
     int deviceCall ( File address , IOCommand command , uint8_t * parameter ){

@@ -21,15 +21,18 @@ export async function sleep ( micros ){
 }
 
 
-export function exportTermios ( settings ){
+export function readTermios ( settings ){
 
     const bytes = new Uint8Array(57);
 
-    Native.exportTermios(settings,bytes);
+    Native.readTermios(settings,bytes);
 
     return bytes;
 }
 
+export function writeTermios ( settings , data ){
+    Native.writeTermios(settings,bytes);
+}
 
 const cString = ( string ) =>
     new TextEncoder()
