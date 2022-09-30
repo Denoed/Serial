@@ -28,31 +28,31 @@ export default {
      *  Carriege-Return -> Newline
      */
 
-    CarriegeReturnToNewline : bit(4) ,
+    CarriegeReturnToNewline : bit(3) ,
 
     /**
      *  Don't output Carriege-Return for the 0th column.
      */
 
-    DelayCarriegeReturn : bit(5) ,
+    DelayCarriegeReturn : bit(4) ,
 
     /**
      *  Doesn't output Carriege-Return.
      */
 
-    NoCarriegeReturn : bit(6) ,
+    NoCarriegeReturn : bit(5) ,
 
     /**
      *  Delay by sending fill chars instead of waiting.
      */
 
-    DelayViaFill : bit(8) ,
+    DelayViaFill : bit(6) ,
 
     /**
      *  Non-Linux
      *  Use char 177 instead of char 0 as fill char.
      */
 
-    FillIsDelete : bit(9)
+    FillIsDelete : bit(7)
 
 }

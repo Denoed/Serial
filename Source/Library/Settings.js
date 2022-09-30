@@ -15,6 +15,7 @@ import { InputFlag } from './Enums/InputFlag.ts'
 import { readTermios } from './Native.js'
 
 
+
 import { updateTerminalSettings , queryTerminalSettings } from './Native.js'
 
 
@@ -27,6 +28,7 @@ function u32 ( bytes ){
 }
 
 import decode from './Encoding/TermiosDecoder.js'
+import encode from './Encoding/TermiosEncoder.js'
 
 export default class Settings {
 
@@ -43,13 +45,21 @@ export default class Settings {
         //
         // log('New',u32(bytes.subarray(8,12)));
 
-        const parsed = decode(pointer);
+        const bytes = readTermios(pointer);
+
+
+        const parsed = decode(bytes);
         log(parsed);
         log('New',parsed.flags.control);
 
         const s =  new Settings(settings,pointer);
 
         log('Old',s.controlFlags);
+
+        const b = encode(parsed);
+
+        log('OldBytes',bytes);
+        log('NewBytes',b);
 
         return s;
     }

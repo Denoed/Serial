@@ -1,5 +1,4 @@
 
-import { readTermios } from '../Native.js'
 import { InputFlag } from '../Enums/InputFlag.ts'
 import OutputFlag from '../Enums/OutputFlag.js'
 import ControlFlag from '../Enums/ControlFlag.js'
@@ -58,13 +57,8 @@ const bitrateToType = Object.fromEntries(baudrateMapping);
 const typeToBitrate = Object.fromEntries(baudrateMapping.map(([ a , b ]) => [ b , a ]));
 
 
-/**
- *  @param pointer Pointer to the termios struct.
- */
 
-export default function decode ( pointer ){
-
-    const bytes = readTermios(pointer);
+export default function decode ( bytes ){
 
     log('Bytes',bytes);
 
@@ -139,7 +133,7 @@ export default function decode ( pointer ){
     }
 
 
-    const characterSize = ((controlFlags & ControlMask.CharacterSize) >> 5 ) + 5;
+    const characterSize = ((controlFlags & ControlMask.CharacterSize) >> 4 ) + 5;
 
 
     return {

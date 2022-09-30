@@ -9,36 +9,36 @@ export default {
      *  Newline delay mask.
      */
 
-    Newline : [ 10 ] ,
+    Newline : [ 8 ] ,
 
     /**
      *  Carriege-Return delay mask.
      */
 
-    CarriegeReturn : [ 12 , 13 ] ,
+    CarriegeReturn : [ 9 , 10 ] ,
 
     /**
      *  Horizontal Tab delay mask.
      */
 
-    HorizontalTab : [ 14 , 16 ] ,
+    HorizontalTab : [ 11 , 12 ] ,
 
     /**
      *  Backspace delay mask.
      */
 
-    Backspace : [ 17 ] ,
+    Backspace : [ 13 ] ,
 
     /**
      *  Vertical Tab delay mask.
      */
 
-    VerticalTab : [ 18 ] ,
+    VerticalTab : [ 14 ] ,
 
     /**
      *  Form feed delay mask.
      */
 
-    FormFeed : [ 21 ]
+    FormFeed : [ 15 ]
 
 }

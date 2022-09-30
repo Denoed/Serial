@@ -94,7 +94,7 @@ export default class SerialPort {
 
     async isDataAvailable (){
         const count = await availableBytes(this.#pointer);
-        log('Count',count);
+        // log('Count',count);
         return count > 0;
     }
 

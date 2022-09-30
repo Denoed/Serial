@@ -41,7 +41,7 @@ export default {
      *  Echo input
      */
 
-    Echo          : bit(4) ,
+    Echo          : bit(3) ,
 
     /**
      *  If Canonical is set:
@@ -49,21 +49,21 @@ export default {
      *  Preceding word is erased with WERASE
      */
 
-    EchoErase     : bit(5) ,
+    EchoErase     : bit(4) ,
 
     /**
      *  If Canonical is set:
      *  Current line is erased with KILL
      */
 
-    EchoKill      : bit(6) ,
+    EchoKill      : bit(5) ,
 
     /**
      *  If Canonical is set:
      *  Echos newline chars
      */
 
-    EchoNewline   : bit(8) ,
+    EchoNewline   : bit(6) ,
 
     /**
      *  Disable flushing input & output
@@ -75,13 +75,13 @@ export default {
      *  - Quit
      */
 
-    DontFlush : bit(9) ,
+    DontFlush : bit(7) ,
 
     /**
      *  Sends SIGTTOU to background process.
      */
 
-    StopOutput : bit(10) ,
+    StopOutput : bit(8) ,
 
     /**
      *  Non-POSIX
@@ -91,7 +91,7 @@ export default {
      *  Tab Newline Start Stop
      */
 
-    EchoControl : bit(12) ,
+    EchoControl : bit(9) ,
 
     /**
      *  Non-POSIX
@@ -99,7 +99,7 @@ export default {
      *  Chars are printed as they are being erased.
      */
 
-    EchoPrint : bit(13) ,
+    EchoPrint : bit(10) ,
 
     /**
      *  Non-POSIX
@@ -108,7 +108,7 @@ export default {
      *  line, defined by EchoErase & EchoPrint.
      */
 
-    Choke : bit(14) ,
+    Choke : bit(11) ,
 
     /**
      *  Non-POSIX
@@ -116,7 +116,7 @@ export default {
      *  Toggled by sending the Discard char.
      */
 
-    FlushOutput : bit(16) ,
+    FlushOutput : bit(12) ,
 
     /**
      *  Non-POSIX
@@ -124,7 +124,7 @@ export default {
      *  reprinted once the next char is read.
      */
 
-    ReprintInput : bit(18) ,
+    ReprintInput : bit(13) ,
 
     /**
      *  Enable implementation defined input processsing.
@@ -133,11 +133,11 @@ export default {
      *  IUCLC flag will be effective.
      */
 
-    ExtentedInput : bit(20) ,
+    ExtentedInput : bit(14) ,
 
     /**
      *
      */
 
-    ExtendedProcessing : bit(21)
+    ExtendedProcessing : bit(15)
 }
