@@ -16,31 +16,21 @@ export default async function connect ( options = {} ){
     if(! 'path' in options)
         throw `Cannot connect to a serial port without a PATH to it.`
 
-    log('Options',options,options.path);
+    const { path } = options;
 
-    const file = await openPort(options.path);
-
-    log('FD',file);
+    const file = await openPort(path);
 
     let backup;
-
-    // try {
 
     await exclusive(file);
 
     backup = await Settings.of(file);
-    log('Original control',backup.controlFlags);
-    backup.log();
+    // backup.log();
 
     await setDefaults(file);
     await flushIO(file);
 
-    // } catch (error) {
-    //     console.error(error);
-    // }
-
-
-    return new SerialPort(file);
+    return new SerialPort(file,backup);
 }
 
 
@@ -51,25 +41,34 @@ import ControlFlag from '../Enums/ControlFlag.js'
 async function setDefaults ( file ){
 
     const settings = await Settings.of(file);
-    settings.log();
-    settings.line = 0x0;
-    settings.inputFlags = InputFlag.IgnoreBreaks;
-    settings.outputFlags = 0;
-    settings.localFlags = 0;
 
-    let { controlFlags } = settings;
+    settings.all.modemLine = {};
 
-    controlFlags |= ControlFlag.Read
-                 |  ControlFlag.Local ;
+    settings.flags.input.IgnoreBreaks = true;
+    settings.flags.output = {};
+    settings.flags.local = {};
 
-    log('controlflag',controlFlags)
+    // settings.line = 0x0;
+    // settings.inputFlags = InputFlag.IgnoreBreaks;
+    // settings.outputFlags = 0;
+    // settings.localFlags = 0;
 
-    settings.controlFlags = controlFlags;
+    // let { controlFlags } = settings;
+    //
+    // controlFlags |= ControlFlag.Read
+    //              |  ControlFlag.Local ;
+    //
+    //
+    // settings.controlFlags = controlFlags;
+
+    const { control } = settings.flags;
+
+    control.Read = true;
+    control.Local = true;
 
     await settings.writeTo(file);
 
     const port = new SerialPort(file);
-    // port.printSettings();
     await port.setBaudRate(BaudRate.B9600);
     await port.setCharSize(8);
     await port.setFlowControl(null);

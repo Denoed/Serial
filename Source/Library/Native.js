@@ -31,7 +31,7 @@ export function readTermios ( settings ){
 }
 
 export function writeTermios ( settings , data ){
-    Native.writeTermios(settings,bytes);
+    Native.writeTermios(settings,data);
 }
 
 const cString = ( string ) =>
