@@ -21,44 +21,6 @@ const { errors } = Deno;
 const { BadResource } = errors;
 const { log } = console;
 
-//
-//
-// const baudRateType = {
-//     4000000 : 4111 ,
-//     3500000 : 4110 ,
-//     3000000 : 4109 ,
-//     2500000 : 4108 ,
-//     2000000 : 4107 ,
-//     1500000 : 4106 ,
-//     1152000 : 4105 ,
-//     1000000 : 4104 ,
-//     921600 : 4103 ,
-//     576000 : 4102 ,
-//     500000 : 4101 ,
-//     460800 : 4100 ,
-//     230400 : 4099 ,
-//     115200 : 4098 ,
-//     57600 : 4097 ,
-//     38400 : 15 ,
-//     19200 : 14 ,
-//     9600 : 13 ,
-//     4800 : 12 ,
-//     2400 : 11 ,
-//     1800 : 10 ,
-//     1200 : 9 ,
-//     600 : 8 ,
-//     300 : 7 ,
-//     200 : 6,
-//     150 : 5,
-//     134 : 4,
-//     110 : 3,
-//     75 : 2,
-//     50 : 1
-// }
-
-
-// const bitRateTypes = Object.fromEntries([...Object.entries(baudRateType)].map(([ a, b]) => [ b  , a ]));
-
 export default class SerialPort {
 
     #transmissionDelay = 0;
@@ -94,7 +56,6 @@ export default class SerialPort {
 
     async isDataAvailable (){
         const count = await availableBytes(this.#pointer);
-        // log('Count',count);
         return count > 0;
     }
 
@@ -128,10 +89,8 @@ export default class SerialPort {
 
     async setBaudRate ( rate ){
 
-        // log('SetBaud',this.#pointer,rate,baudRateType[rate]);
-
         await this.settings(async (settings) => {
-            settings.speed.input = settings.speed.output = rate;//baudRateType[rate];
+            settings.speed.input = settings.speed.output = rate;
         })
 
         this.#transmissionDelay = (8 * 10e6) / rate;
@@ -139,10 +98,6 @@ export default class SerialPort {
 
     async charSize (){
         return await this.settings().characterSize;
-
-        // const { control } = await this.settings().flags;
-        //
-        // return (controlFlags & ControlFlag.CharacterSize);
     }
 
     async setCharSize ( size ){
@@ -150,27 +105,9 @@ export default class SerialPort {
         if(size < 5 || size > 8)
             throw 'Character Size has to be in the range of 5 - 8 bits';
 
-        // size -= 5;
-        // size <<= 5;
-
         await this.settings(async (settings) => {
-
             settings.all.characterSize = size;
-
             settings.flags.input.StripLastBit = ( size < 8 );
-
-            // let { inputFlags , controlFlags } = settings;
-            //
-            // controlFlags &= ~ ControlFlag.CharacterSize;
-            // controlFlags |= size;
-            //
-            //  if(size === ControlCharacter.CharacterSize)
-            //      inputFlags &= ~ InputFlag.Strip;
-            //  else
-            //      inputFlags |= InputFlag.Strip;
-            //
-            //  settings.controlFlags = controlFlags;
-            //  settings.inputFlags = inputFlags;
         })
     }
 
@@ -191,25 +128,6 @@ export default class SerialPort {
             ! input.OutputFlowControl
         ) return (control.HardwareFlow)
             ? 'hardware' : null ;
-
-        //
-        //
-        // const { inputFlags , controlFlags } = await this.settings();
-        //
-        // const
-        //     togglableOutput = (inputFlags & InputFlag.OutputFlowControl) ,
-        //     togglableInput = (inputFlags & InputFlag.InputFlowControl) ;
-        //
-        // if(
-        //     togglableOutput && togglableInput &&
-        //     (settings.controlChar(ControlCharacter.Start) === 0x11) &&
-        //     (settings.controlChar(ControlCharacter.Stop)  === 0x13)
-        // ) return 'software';
-        //
-        // if( ! togglableOutput && ! togglableInput )
-        //     return (controlFlags & 20000000000)
-        //         ? 'hardware'
-        //         : null ;
 
         throw 'Unknown control flow type.'
     }
@@ -253,35 +171,6 @@ export default class SerialPort {
 
                 control.HardwareFlow = false;
             }
-
-            //
-            //
-            // let { inputFlags , controlFlags } = settings;
-            //
-            // switch(flow){
-            // case 'hardware' :
-            //
-            //     inputFlags &= ~ ( InputFlag.InputFlowControl | InputFlag.OutputFlowControl );
-            //     controlFlags |= 20000000000;
-            //     settings.controlChar(ControlCharacter.Start,0x0);
-            //     settings.controlChar(ControlCharacter.Stop,0x0);
-            //
-            //     break;
-            // case 'software' :
-            //
-            //     inputFlags |= InputFlag.InputFlowControl | InputFlag.OutputFlowControl;
-            //     controlFlags &= ~ 20000000000;
-            //     settings.controlChar(ControlCharacter.Start,0x11);
-            //     settings.controlChar(ControlCharacter.Stop,0x13);
-            //
-            //     break;
-            // default:
-            //     inputFlags &= ~ ( InputFlag.InputFlowControl | InputFlag.OutputFlowControl );
-            //     controlFlags &= ~ 20000000000;
-            // }
-            //
-            // settings.controlFlags = controlFlags;
-            // settings.inputFlags = inputFlags;
         })
     }
 
@@ -295,20 +184,6 @@ export default class SerialPort {
                 ? 'odd' : 'even' ;
 
         return null;
-        //
-        //
-        // const settings = await Settings.of(this.#pointer);
-        // const { controlFlags } = settings;
-        //
-        // const
-        //     enabled = controlFlags & ControlFlag.ParityEnabled ,
-        //     odd = controlFlags & ControlFlag.OddParity ;
-        //
-        // if(enabled)
-        //     return (odd)
-        //         ? 'odd' : 'even' ;
-        //
-        // return null;
     }
 
     async setParity ( parity ){
@@ -319,50 +194,23 @@ export default class SerialPort {
         const settings = await this.settings();
         const { control , input } = settings.flags;
 
-        // const settings = await Settings.of(this.#pointer);
-        // let { controlFlags , inputFlags } = settings;
-
-
         let
             enabled = [ 'odd' , 'even' ].includes(parity) ,
             odd = parity === 'odd' ;
 
         control.ParityEnabled = enabled;
         control.OddParity = odd;
-        //
-        // controlFlags &= ~ ( ControlFlag.ParityEnabled | ControlFlag.OddParity );
-        //
-        // if(enabled)
-        //     controlFlags |= ControlFlag.ParityEnabled;
-        //
-        // if(odd)
-        //     controlFlags |= ControlFlag.OddParity;
-        //
-        // settings.controlFlags = controlFlags;
-
 
         if(enabled)
             input.CheckParity = true;
         else
             input.IgnoreErrors = true;
-        //
-        // inputFlags |= (enabled)
-        //     ? InputFlag.CheckParity
-        //     : InputFlag.IgnoreErrors ;
-
-        // settings.inputFlags = inputFlags;
 
         await settings.writeTo(this.#pointer);
     }
 
     async stopBits (){
         return (await this.settings()).flags.control.DoubleStopBits ? 2 : 1 ;
-        //
-        // const settings = await Settings.of(this.#pointer);
-        // const { controlFlags } = settings;
-        //
-        // return (controlFlags & ControlFlag.DoubleStopBits)
-        //     ? 2 : 1 ;
     }
 
     async useDoubleStopBits ( state ){
@@ -370,24 +218,10 @@ export default class SerialPort {
         await this.settings((settings) => {
             settings.flags.control.DoubleStopBits = state;
         })
-        //
-        // const settings = await this.settings();
-        // let { controlFlags } = settings;
-        //
-        // if(state)
-        //     controlFlags |=   ControlFlag.DoubleStopBits;
-        // else
-        //     controlFlags &= ~ ControlFlag.DoubleStopBits;
-        //
-        // settings.controlFlags = controlFlags;
-        // await settings.writeTo(this.#pointer);
     }
 
     async vMin (){
         return (await this.settings()).controlCharacters.Min;
-        // return await Settings
-        //     .of(this.#pointer)
-        //     .vmin;
     }
 
     async setVMin ( char ){
@@ -398,17 +232,10 @@ export default class SerialPort {
         await this.settings((settings) => {
             settings.controlCharacters.Min = char;
         })
-        //
-        // const settings = await Settings.of(this.#pointer);
-        // settings.vmin = minimum;
-        // await settings.writeTo(this.#pointer);
     }
 
     async vTime (){
         return (await this.settings()).controlCharacters.Time;
-        // return await Settings
-        //     .of(this.#pointer)
-        //     .vtime;
     }
 
     async setVTime ( char ){
@@ -419,10 +246,6 @@ export default class SerialPort {
         await this.settings((settings) => {
             settings.controlCharacters.Time = char;
         })
-        //
-        // const settings = await Settings.of(this.#pointer);
-        // settings.vtime = time;
-        // await settings.writeTo(this.#pointer);
     }
 
     async dtr (){
@@ -531,53 +354,6 @@ export default class SerialPort {
         const settings = await this.settings();
 
         log(settings.all);
-
-        // log(`
-        //     Control Flags
-        //     =============
-        //
-        //     Character Size   : ${ settings.characterSize }
-        //     Double Stop Bits : ${ settings.doubleStopBits }
-        //     Read             : ${ settings.canRead }
-        //     Parity           : ${ settings.usesParity }
-        //     Odd Parity       : ${ settings.oddParity }
-        //     Hangs Up         : ${ settings.hangsUp }
-        //     Local            : ${ settings.isLocal }
-        //
-        //     Input Flags
-        //     ===========
-        //
-        //     Ignore Breaks              : ${ settings.input_IgnoreBreaks }
-        //     Interrupt On Break         : ${ settings.input_InterruptOnBreak }
-        //     Ignore Errors              : ${ settings.input_IgnoreErrors }
-        //     Mark Errors                : ${ settings.input_MarkErrors }
-        //     Check Parity               : ${ settings.input_CheckParity }
-        //     Strip Last Bit             : ${ settings.input_StripLastBit }
-        //     Newline to Carriege Return : ${ settings.input_NewlineToCarriegeReturn }
-        //     Ignore Carriege Return     : ${ settings.input_IgnoreCarriegeReturn }
-        //     Carriege Return To Newline : ${ settings.input_CarriegeReturnToNewline }
-        //     UpperCase To LowerCase     : ${ settings.input_UpperCaseToLowerCase }
-        //     Output Flow Control        : ${ settings.input_OutputFlowControl }
-        //     Any Char Restarts          : ${ settings.input_AnyCharRestarts }
-        //     Input Flow Control         : ${ settings.input_InputFlowControl }
-        //     Bell On Full Queue         : ${ settings.input_BellOnFullQueue }
-        //     UTF8                       : ${ settings.input_UTF8 }
-        //
-        //     Flags
-        //     =====
-        //     Output: ${ settings.outputFlags }
-        //     Local: ${ settings.localFlags }
-        //
-        //     Speed
-        //     =====
-        //     Output : ${ bitRateTypes[settings.outputSpeed] }
-        //     Input : ${ bitRateTypes[settings.inputSpeed] }
-        //
-        //     line : ${ settings.line }
-        //
-        //     VTime : ${ settings.vtime }
-        //     VMin : ${ settings.vmin }
-        // `)
     }
 }
 

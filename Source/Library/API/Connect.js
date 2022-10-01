@@ -25,7 +25,6 @@ export default async function connect ( options = {} ){
     await exclusive(file);
 
     backup = await Settings.of(file);
-    // backup.log();
 
     await setDefaults(file);
     await flushIO(file);
@@ -48,18 +47,6 @@ async function setDefaults ( file ){
     settings.flags.output = {};
     settings.flags.local = {};
 
-    // settings.line = 0x0;
-    // settings.inputFlags = InputFlag.IgnoreBreaks;
-    // settings.outputFlags = 0;
-    // settings.localFlags = 0;
-
-    // let { controlFlags } = settings;
-    //
-    // controlFlags |= ControlFlag.Read
-    //              |  ControlFlag.Local ;
-    //
-    //
-    // settings.controlFlags = controlFlags;
 
     const { control } = settings.flags;
 

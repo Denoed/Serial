@@ -39,8 +39,6 @@ try {
 
             a = await port.isDataAvailable();
 
-            // log('Data Available?',a);
-
             if(a || tries > 200){
                 clearInterval(i);
                 resolve();
