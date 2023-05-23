@@ -20,5 +20,11 @@
                 "https://deno.land": true
             }
         }
+    },
+
+    "lint": {
+        "include": [
+            "./Source/Library/**/*.ts"
+        ]
     }
 }

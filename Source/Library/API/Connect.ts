@@ -1,16 +1,12 @@
 
 export { connect }
 
-import {
-    flushIO , openPort , closeFile ,
-    exclusive , deviceCall , queryTerminalSettings
-} from '../Native.js'
+import { exclusive , openPort , flushIO } from '../Native.js'
+import { FileDescriptor } from '../Types.ts'
+import { BaudRate } from '../Helper/BaudRate.ts'
 
 import SerialPort from '../SerialPort.js'
 import Settings from '../Settings.js'
-import { BaudRate } from '../Helper/BaudRate.ts'
-
-const { log } = console;
 
 
 async function connect ( options = {} ){
@@ -23,38 +19,34 @@ async function connect ( options = {} ){
     const file = await
         openPort(path)
 
-    let backup;
+    await exclusive(file)
 
-    await exclusive(file);
+    const backup = await 
+        Settings.of(file)
 
-    backup = await Settings.of(file);
+    await setDefaults(file)
+    await flushIO(file)
 
-    await setDefaults(file);
-    await flushIO(file);
-
-    return new SerialPort(file,backup);
+    return new SerialPort(file,backup)
 }
 
 
-import { InputFlag } from '../Enums/InputFlag.ts'
-import ControlFlag from '../Enums/ControlFlag.js'
+async function setDefaults ( file : FileDescriptor ){
 
+    const settings = await 
+        Settings.of(file)
 
-async function setDefaults ( file ){
-
-    const settings = await Settings.of(file);
-
-    settings.all.modemLine = {};
+    settings.all.modemLine = {}
 
     settings.flags.input.IgnoreBreaks = true;
-    settings.flags.output = {};
-    settings.flags.local = {};
+    settings.flags.output = {}
+    settings.flags.local = {}
 
 
     const { control } = settings.flags;
 
-    control.Read = true;
     control.Local = true;
+    control.Read = true;
 
     await settings.writeTo(file);
 

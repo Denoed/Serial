@@ -1,19 +1,15 @@
 
-import ControlCharacter from './Enums/ControlCharacter.js'
-import FileCommand from './Enums/FileCommand.js'
-import ControlFlag from './Enums/ControlFlag.js'
-import FileStatus from './Enums/FileStatus.js'
-import { InputFlag } from './Enums/InputFlag.ts'
-import ModemLine from './Enums/ModemLine.js'
+import FileCommand from './Enums/FileCommand.ts'
+import FileStatus from './Enums/FileStatus.ts'
+import ModemLine from './Enums/ModemLine.ts'
 import Settings from './Settings.js'
 
-import { BaudRate } from './Helper/BaudRate.ts'
 
 import { sleep } from './Native.js'
 
 import {
     flushIO , flushInput as flushI , modifyFile , deviceCall ,
-     closeFile , availableBytes , readByte as readB , readBytes as readBs
+    closeFile , availableBytes , readBytes as readBs
 } from './Native.js'
 
 

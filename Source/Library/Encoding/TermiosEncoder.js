@@ -1,13 +1,13 @@
 
+export { encode }
 
 import { InputFlag } from '../Enums/InputFlag.ts'
-import OutputFlag from '../Enums/OutputFlag.js'
-import ControlFlag from '../Enums/ControlFlag.js'
-import LocalFlag from '../Enums/LocalFlag.js'
-import OutputDelayMask from '../Enums/OutputDelayMask.js'
-import ControlCharacter from '../Enums/ControlCharacter.js'
-import ControlMask from '../Enums/ControlMask.js'
-import ModemLine from '../Enums/ModemLine.js'
+import OutputFlag from '../Enums/OutputFlag.ts'
+import ControlFlag from '../Enums/ControlFlag.ts'
+import LocalFlag from '../Enums/LocalFlag.ts'
+import OutputDelayMask from '../Enums/OutputDelayMask.ts'
+import ControlCharacter from '../Enums/ControlCharacter.ts'
+import ModemLine from '../Enums/ModemLine.ts'
 
 
 const { debug } = console;
@@ -46,7 +46,8 @@ const baudrateMapping = [
     [      50 , 1    ]
 ]
 
-const bitrateToType = Object.fromEntries(baudrateMapping);
+const bitrateToType = Object
+    .fromEntries(baudrateMapping)
 
 
 function u32ToBytes ( number ){
@@ -63,16 +64,16 @@ function fromFlags ( data , enums ){
 
     let flag = 0;
 
-    for(const key in enums)
-        if(data[key])
-            flag |= enums[key];
+    for ( const key in enums )
+        if( data[key] )
+            flag |= enums[key]
 
-    return flag;
+    return flag
 }
 
 
 
-export default function encode ( data ){
+function encode ( data ){
 
     const inputSpeed = u32ToBytes(bitrateToType[data.speed.input]);
     const outputSpeed = u32ToBytes(bitrateToType[data.speed.output]);

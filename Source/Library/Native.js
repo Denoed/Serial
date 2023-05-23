@@ -7,11 +7,11 @@ export {
 }
 
 import Definitions from './Definitions.js'
-import Commands from './Enums/Commands.js'
-import Errors from './Enums/Errors.js'
+import Commands from './Enums/Commands.ts'
+import Errors from './Enums/Errors.ts'
 import * as Paths from './Paths.js'
 
-import { OperationWouldBlock } from './Enums/Errors.js'
+import { OperationWouldBlock } from './Enums/Errors.ts'
 
 const { dlopen , errors } = Deno;
 const { Interrupted } = errors;

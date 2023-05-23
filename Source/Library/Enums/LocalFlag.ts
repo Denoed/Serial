@@ -1,5 +1,5 @@
 
-import { mask as bit } from '../Misc/Bits.js'
+import { mask as bit } from '../Misc/Bits.ts'
 
 
 export default {

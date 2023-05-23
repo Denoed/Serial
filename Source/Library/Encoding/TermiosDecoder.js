@@ -1,12 +1,14 @@
 
 import { InputFlag } from '../Enums/InputFlag.ts'
-import OutputFlag from '../Enums/OutputFlag.js'
-import ControlFlag from '../Enums/ControlFlag.js'
-import LocalFlag from '../Enums/LocalFlag.js'
-import OutputDelayMask from '../Enums/OutputDelayMask.js'
-import ControlCharacter from '../Enums/ControlCharacter.js'
-import ControlMask from '../Enums/ControlMask.js'
-import ModemLine from '../Enums/ModemLine.js'
+
+import ControlCharacter from '../Enums/ControlCharacter.ts'
+import OutputDelayMask from '../Enums/OutputDelayMask.ts'
+import ControlMask from '../Enums/ControlMask.ts'
+import ControlFlag from '../Enums/ControlFlag.ts'
+import OutputFlag from '../Enums/OutputFlag.ts'
+import ModemLine from '../Enums/ModemLine.ts'
+import LocalFlag from '../Enums/LocalFlag.ts'
+
 
 const { debug } = console;
 
@@ -15,7 +17,7 @@ function u32 ( bytes ){
     return bytes[0] <<  0
          | bytes[1] <<  8
          | bytes[2] << 16
-         | bytes[3] << 24 ;
+         | bytes[3] << 24
 }
 
 

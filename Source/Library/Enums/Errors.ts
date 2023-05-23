@@ -1,10 +1,10 @@
 
 const {
-    PermissionDenied , BadResource , TypeError , NotFound ,
-    AddrInUse , ConnectionAborted , AddrNotAvailable ,
     ConnectionRefused , ConnectionReset , AlreadyExists ,
-    Interrupted , OutOfMemory , Unsupported , NotConnected ,
-    BrokenPipe , TimedOut , InvalidInput
+    AddrInUse , ConnectionAborted , AddrNotAvailable ,
+    PermissionDenied , BadResource , NotFound ,
+    Interrupted , NotSupported , NotConnected ,
+    BrokenPipe , TimedOut , InvalidData , 
 } = Deno.errors;
 
 
@@ -26,7 +26,7 @@ export default {
      10 : NotFound ,
      11 : OperationWouldBlock ,
      // 11 : TryAgain_OperationWouldBlock ,
-     12 : OutOfMemory ,
+    //  12 : OutOfMemory ,
      13 : PermissionDenied ,
      // 14 : BadAddress ,
      // 15 : BlockDeviceRequired ,
@@ -36,7 +36,7 @@ export default {
      // 19 : NoSuchDevice ,
      // 20 : NotADirectory ,
      // 21 : IsADirectory ,
-     22 : InvalidInput ,
+     22 : InvalidData ,
      // 23 : FileTableOverflow ,
      // 24 : TooManyOpenFiles ,
      25 : BadResource ,
@@ -52,7 +52,7 @@ export default {
      // 35 : ResourceDeadlockWouldOccur ,
      // 36 : FileNameTooLong ,
      // 37 : NoRecordLocksAvailable ,
-     38 : Unsupported ,
+     38 : NotSupported ,
      // 39 : DirectoryNotEmpty ,
      // 40 : TooManySymbolicLinksEncountered ,
 

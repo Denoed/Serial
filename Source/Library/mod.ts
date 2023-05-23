@@ -3,9 +3,8 @@ export { FlowControl } from './Helper/FlowControl.ts'
 export { BaudRate } from './Helper/BaudRate.ts'
 export { Parity } from './Helper/Parity.ts'
 
-export { availablePorts , connect }
+export { availablePorts }
 
-import { connect as internalConnect } from './API/Connect.js'
 import AvailablePorts from './API/AvailablePorts.js'
 
 
@@ -22,13 +21,9 @@ function availablePorts (){
 /**
  *  Try to connect to a serial port.
  *  @param options How & whereto connect.
- *  @return A serial object for futher interaction.
+ *  @return A serial object for further interaction.
  */
 
-function connect ( options : object ){
-    return internalConnect( options ) as Promise < object >
-}
-
-
+export { connect } from './API/Connect.ts'
 
 
