@@ -39,26 +39,21 @@ const cString = ( string ) =>
         .encode(string);
 
 
+
+class SystemError extends Error {
+
+    constructor ( error ){
+        super(error)
+        this.name = `System Error : ${ error }`
+    }
+}
+
 function exception (){
 
     const error = Native.error();
 
-    let exception = new Error(`System Error : ${ error }`);
-
-    if(error in Errors)
-        exception = new Errors[error];
-
-    exception.stack = exception.stack
-        .split('\n')
-        .filter((_,index) => index !== 1)
-        .join('\n');
-
-    return exception;
-
-    // if(error in Errors)
-    //     return new Errors[error];
-    //
-    // return new Error(`System Error : ${ error }`);
+    return Errors[ error ]
+        ?? SystemError
 }
 
 
@@ -236,7 +231,7 @@ async function command ( command , file , instruction , data ){
 
 
 /*
- *  Continuosly try calling the
+ *  Continuously try calling the
  *  function if it is interrupted.
  */
 
