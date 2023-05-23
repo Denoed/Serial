@@ -1,13 +1,10 @@
 
 export { encode }
 
-import { InputFlag } from '../Enums/InputFlag.ts'
-import OutputFlag from '../Enums/OutputFlag.ts'
-import ControlFlag from '../Enums/ControlFlag.ts'
-import LocalFlag from '../Enums/LocalFlag.ts'
-import OutputDelayMask from '../Enums/OutputDelayMask.ts'
-import ControlCharacter from '../Enums/ControlCharacter.ts'
-import ModemLine from '../Enums/ModemLine.ts'
+import {
+    OutputDelayMask , ControlCharacter , ModemLine ,
+    InputFlag , OutputFlag , ControlFlag , LocalFlag
+} from '../Types/mod.ts'
 
 
 const { debug } = console;

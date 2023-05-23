@@ -1,16 +1,14 @@
 
-function bit ( position : number ) : number {
-    return 1 << position;
-}
+import { mask } from '../Misc/Bits.ts'
 
 
-export enum InputFlag {
+export default {
 
     /**
      *  Ignore BREAK condition on input.
      */
 
-    IgnoreBreaks            = bit(0) ,
+    IgnoreBreaks : mask(0) ,
 
     /**
      *  If IgnoreBreak is set:
@@ -24,89 +22,89 @@ export enum InputFlag {
      *  BREAK = \377 \0 \0
      */
 
-    InterruptOnBreak        = bit(1) ,
+    InterruptOnBreak : mask(1) ,
 
     /**
      *  Ignore parity & framing errors.
      */
 
-    IgnoreErrors            = bit(2) ,
+    IgnoreErrors : mask(2) ,
 
     /**
      *  Marks parity & framing error bytes with \377 \0
      *  Needs CheckParity enabled & IgnoreErrors disabled.
      */
 
-    MarkErrors              = bit(3) ,
+    MarkErrors : mask(3) ,
 
     /**
      *  Check parity of the input.
      */
 
-    CheckParity             = bit(4) ,
+    CheckParity : mask(4) ,
 
     /**
      *  Strip the 8th bit of each char.
      */
 
-    StripLastBit            = bit(5) ,
+    StripLastBit : mask(5) ,
 
     /**
      *  Map Newline to Carriege-Return.
      */
 
-    NewlineToCarriegeReturn = bit(6) ,
+    NewlineToCarriegeReturn : mask(6) ,
 
     /**
      *  Ignore Carriege-Return
      */
 
-    IgnoreCarriegeReturn    = bit(7) ,
+    IgnoreCarriegeReturn : mask(7) ,
 
     /**
      *  Map Carriege-Return to Newline.
      *  Unless IgnoreCarriegeReturn is set.
      */
 
-    CarriegeReturnToNewline = bit(8) ,
+    CarriegeReturnToNewline : mask(8) ,
 
     /**
      *  Non-POSIX
      *  Map chars from uppercase to lowercase.
      */
 
-    UpperCaseToLowerCase    = bit(9) ,
+    UpperCaseToLowerCase : mask(9) ,
 
     /**
      *  Enable toggleable output flow control.
      */
 
-    OutputFlowControl       = bit(10) ,
+    OutputFlowControl : mask(10) ,
 
     /**
      *  Make any char restart the output
      *  instead of only the START character.
      */
 
-    AnyCharRestarts         = bit(11) ,
+    AnyCharRestarts : mask(11) ,
 
     /**
      *  Enable toggleable input flow control.
      */
 
-    InputFlowControl        = bit(12) ,
+    InputFlowControl : mask(12) ,
 
     /**
      *  Non-POSIX
      *  Ring bell when queue is full.
      */
 
-    BellOnFullQueue         = bit(13) ,
+    BellOnFullQueue : mask(13) ,
 
     /**
      *  Non-POSIX
      *  Chars are UTF-8
      */
 
-    UTF8                    = bit(14)
+    UTF8 : mask(14)
 }

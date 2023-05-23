@@ -2,7 +2,7 @@
 export { connect }
 
 import { exclusive , openPort , flushIO } from '../Native.js'
-import { FileDescriptor } from '../Types.ts'
+import { FileDescriptor } from '../Types/mod.ts'
 import { BaudRate } from '../Helper/BaudRate.ts'
 
 import SerialPort from '../SerialPort.js'

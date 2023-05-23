@@ -1,11 +1,8 @@
 
-import FileCommand from './Enums/FileCommand.ts'
-import FileStatus from './Enums/FileStatus.ts'
-import ModemLine from './Enums/ModemLine.ts'
-import Settings from './Settings.js'
-
-
+import { FileCommand , FileStatus , ModemLine } from './Types/mod.ts'
 import { sleep } from './Native.js'
+
+import Settings from './Settings.js'
 
 import {
     flushIO , flushInput as flushI , modifyFile , deviceCall ,
@@ -21,7 +18,7 @@ export default class SerialPort {
     #pointer;
     #backup;
 
-    constructor ( pointer ){
+    constructor ( pointer , _backup ){
         this.#pointer = pointer;
         debug('Constructor',this.#pointer,pointer);
     }

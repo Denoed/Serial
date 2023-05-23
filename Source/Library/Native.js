@@ -6,12 +6,11 @@ export {
     readBytes , sleep , availableBytes
 }
 
+import { Commands , Errors } from './Types/mod.ts'
+
 import Definitions from './Definitions.ts'
-import Commands from './Enums/Commands.ts'
-import Errors from './Enums/Errors.ts'
 import * as Paths from './Paths.ts'
 
-import { OperationWouldBlock } from './Enums/Errors.ts'
 
 const { dlopen , errors } = Deno;
 const { Interrupted } = errors;
@@ -105,7 +104,7 @@ async function readBytes ( file , buffer , byteCount ){
     const [ readCount , error ] = await
         retry(Native.readBytes,file,buffer,byteCount)
 
-    if( readCount < 0 && ! ( error instanceof OperationWouldBlock ) )
+    if( readCount < 0 && ! ( error instanceof Deno.errors.WouldBlock ) )
         throw error
 
     return readCount

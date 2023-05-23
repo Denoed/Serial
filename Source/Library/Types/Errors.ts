@@ -4,13 +4,10 @@ const {
     AddrInUse , ConnectionAborted , AddrNotAvailable ,
     PermissionDenied , BadResource , NotFound ,
     Interrupted , NotSupported , NotConnected ,
-    BrokenPipe , TimedOut , InvalidData , 
+    BrokenPipe , TimedOut , InvalidData , WouldBlock
 } = Deno.errors;
 
 
-export class OperationWouldBlock extends Error {
-
-}
 
 export default {
 
@@ -24,7 +21,7 @@ export default {
       // 8 : ExecutableFormatError ,
       // 9 : BadFileNumber ,
      10 : NotFound ,
-     11 : OperationWouldBlock ,
+     11 : WouldBlock ,
      // 11 : TryAgain_OperationWouldBlock ,
     //  12 : OutOfMemory ,
      13 : PermissionDenied ,
