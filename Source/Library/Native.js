@@ -6,10 +6,10 @@ export {
     readBytes , sleep , availableBytes
 }
 
-import Definitions from './Definitions.js'
+import Definitions from './Definitions.ts'
 import Commands from './Enums/Commands.ts'
 import Errors from './Enums/Errors.ts'
-import * as Paths from './Paths.js'
+import * as Paths from './Paths.ts'
 
 import { OperationWouldBlock } from './Enums/Errors.ts'
 

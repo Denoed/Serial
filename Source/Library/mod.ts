@@ -3,19 +3,14 @@ export { FlowControl } from './Helper/FlowControl.ts'
 export { BaudRate } from './Helper/BaudRate.ts'
 export { Parity } from './Helper/Parity.ts'
 
-export { availablePorts }
-
-import AvailablePorts from './API/AvailablePorts.js'
-
 
 /**
  *  Query the list of available serial ports.
  *  @return An array containing the ports paths.
  */
 
-function availablePorts (){
-    return AvailablePorts() as Promise < string [] >
-}
+export { availablePorts } from './API/AvailablePorts.ts'
+
 
 
 /**

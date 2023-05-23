@@ -2,7 +2,16 @@
 {
     "tasks" : {
         "compile" : "bash .github/Tasks/Compile.sh" ,
-        "develop" : "bash .github/Tasks/Develop.sh"
+        "develop" : "bash .github/Tasks/Develop.sh" ,
+        "lint" : "bash .github/Tasks/Lint.sh"
+    },
+
+    "compilerOptions" : {
+
+        "lib": [
+            "deno.window" ,
+            "ES2022"
+        ]
     },
 
     "importMap" : "./.github/Imports.json" ,
@@ -24,7 +33,7 @@
 
     "lint": {
         "include": [
-            "./Source/Library/**/*.ts"
+            "Source/Library/"
         ]
     }
 }

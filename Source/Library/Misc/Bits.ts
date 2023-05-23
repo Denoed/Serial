@@ -5,5 +5,5 @@
  */
 
 export function mask ( position : number ){
-    return ( 1 << position );
+    return ( 1 << position )
 }

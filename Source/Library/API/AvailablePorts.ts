@@ -1,21 +1,18 @@
 
-import { allPorts } from '../Ports.js'
+export { availablePorts }
+
+import { allPorts } from '../Ports.ts'
 import * as Serial from '../Native.js'
 
+
 const { NotFound } = Deno.errors;
-const { log } = console;
 
 
+async function * availablePorts (){
 
-export default async function listPorts (){
-
-    const ports = [];
-
-    for(const port of allPorts())
-        if(await isAvailable(port))
-            ports.push(port);
-
-    return ports;
+    for ( const port of allPorts() )
+        if( await isAvailable(port) )
+            yield port
 }
 
 
@@ -24,7 +21,7 @@ export default async function listPorts (){
  *  Is the port endpoint readable?
  */
 
-async function isAvailable ( port ){
+async function isAvailable ( port : string ){
 
     try {
 

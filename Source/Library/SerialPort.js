@@ -13,8 +13,6 @@ import {
 } from './Native.js'
 
 
-const { errors } = Deno;
-const { BadResource } = errors;
 const { debug , log } = console;
 
 export default class SerialPort {
@@ -23,7 +21,7 @@ export default class SerialPort {
     #pointer;
     #backup;
 
-    constructor ( pointer , backup ){
+    constructor ( pointer ){
         this.#pointer = pointer;
         debug('Constructor',this.#pointer,pointer);
     }
@@ -89,7 +87,7 @@ export default class SerialPort {
 
     async setBaudRate ( rate ){
 
-        await this.settings(async (settings) => {
+        await this.settings(( settings ) => {
             settings.speed.input = settings.speed.output = rate;
         })
 
@@ -105,7 +103,7 @@ export default class SerialPort {
         if(size < 5 || size > 8)
             throw 'Character Size has to be in the range of 5 - 8 bits';
 
-        await this.settings(async (settings) => {
+        await this.settings(( settings ) => {
             settings.all.characterSize = size;
             settings.flags.input.StripLastBit = ( size < 8 );
         })
@@ -139,7 +137,7 @@ export default class SerialPort {
 
         await flushIO(this.#pointer);
 
-        await this.settings(async (settings) => {
+        await this.settings(( settings ) => {
 
             const { input , control } = settings.flags;
 
@@ -194,7 +192,7 @@ export default class SerialPort {
         const settings = await this.settings();
         const { control , input } = settings.flags;
 
-        let
+        const
             enabled = [ 'odd' , 'even' ].includes(parity) ,
             odd = parity === 'odd' ;
 
@@ -261,7 +259,7 @@ export default class SerialPort {
     }
 
     async setRTS ( state ){
-        this.#updateModemControlLine(ModemLine.RequestToSend,state);
+        await this.#updateModemControlLine(ModemLine.RequestToSend,state);
     }
 
 
@@ -276,7 +274,7 @@ export default class SerialPort {
 
     async #queryModemControlLine ( flag ){
 
-        let flags = 0;
+        const flags = 0;
 
         await deviceCall(this.#pointer,Command.QueryModemBits,flags);
 
@@ -306,9 +304,9 @@ export default class SerialPort {
 
     async querySerialPortBlockingStatus (){
 
-        let flags = await this.#queryFileStatus();
+        const flags = await this.#queryFileStatus();
 
-        return (flags & FileStatus.NonBlocking);
+        return ( flags & FileStatus.NonBlocking )
     }
 
     async #queryFileStatus(){
@@ -366,23 +364,6 @@ export default class SerialPort {
 
         log(settings.all);
     }
-}
-
-
-
-function invalidateFunction ( object , method ){
-    object[method] = warnClosed();
-}
-
-function invalidateAccessor ( object , method ){
-    Object.defineProperty(object,method,{
-        get : warnClosed ,
-        set : warnClosed
-    });
-}
-
-function warnClosed (){
-    throw new BadResource('The serial port is closed.');
 }
 
 

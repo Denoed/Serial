@@ -91,7 +91,7 @@ function encode ( data ){
 
     debug('Control Flags',controlFlags);
 
-    let charSize = data.characterSize - 5;
+    const charSize = data.characterSize - 5;
 
     debug('Char Size',charSize << 4);
 

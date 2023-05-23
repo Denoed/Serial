@@ -14,17 +14,13 @@
 
 ## Preview
 
-```JavaScript
+```ts
 import { availablePorts } from 'Serial'
 
 const ports = await availablePorts();
 
-/*
- * [
- *   '/dev/USB0' ,
- *   ...
- * ]
- */
+for ( const port of ports )
+    console.log(port) // '/dev/USB0'
 ```
 
 <br>

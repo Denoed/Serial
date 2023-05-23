@@ -54,8 +54,6 @@ const baudrateMapping = [
     [      50 , 1    ]
 ]
 
-const bitrateToType = Object.fromEntries(baudrateMapping);
-
 const typeToBitrate = Object.fromEntries(baudrateMapping.map(([ a , b ]) => [ b , a ]));
 
 

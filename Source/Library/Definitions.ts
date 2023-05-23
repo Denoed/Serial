@@ -1,12 +1,12 @@
 
-const method = (parameters,result,isAsync = false) =>
+const method = ( parameters : Array<string> , result : string , isAsync = false ) =>
     ({ nonblocking : isAsync , parameters , result });
 
 
-const termios_set = (type) =>
+const termios_set = ( type : string ) =>
     method([ 'pointer' , type ],'void');
 
-const termios_get = (type) =>
+const termios_get = ( type : string ) =>
     method([ 'pointer' ],type);
 
 
