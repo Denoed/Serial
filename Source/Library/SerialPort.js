@@ -19,7 +19,7 @@ import {
 
 const { errors } = Deno;
 const { BadResource } = errors;
-const { log } = console;
+const { debug , log } = console;
 
 export default class SerialPort {
 
@@ -29,7 +29,7 @@ export default class SerialPort {
 
     constructor ( pointer , backup ){
         this.#pointer = pointer;
-        log('Constructor',this.#pointer,pointer);
+        debug('Constructor',this.#pointer,pointer);
     }
 
 
@@ -330,6 +330,8 @@ export default class SerialPort {
         while(remaining > 0){
 
             const readCount = await readBs(this.#pointer,pointer,remaining);
+
+            debug('Read Count',readCount,'Pointer',pointer,'Bytes',bytes)
 
             remaining -= readCount;
             pointer += readCount;

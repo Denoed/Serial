@@ -1,4 +1,11 @@
 
+export {
+    queryTerminalSettings , updateTerminalSettings , writeTermios ,
+    readTermios , deviceCall ,  modifyFile , openPort , readByte ,
+    exclusive , closeFile , flushInput , flushOutput , flushIO ,
+    readBytes , sleep , availableBytes
+}
+
 import Definitions from './Definitions.js'
 import Commands from './Enums/Commands.js'
 import Errors from './Enums/Errors.js'
@@ -8,7 +15,7 @@ import { OperationWouldBlock } from './Enums/Errors.js'
 
 const { dlopen , errors } = Deno;
 const { Interrupted } = errors;
-const { log } = console;
+const { debug } = console;
 
 const { UnsafePointer , UnsafePointerView } = Deno;
 
@@ -16,12 +23,12 @@ const { symbols : Native } =
     dlopen(Paths.sharedLibrary,Definitions);
 
 
-export async function sleep ( micros ){
+async function sleep ( micros ){
     await Native.usleep(micros);
 }
 
 
-export function readTermios ( settings ){
+function readTermios ( settings ){
 
     const bytes = new Uint8Array(57);
 
@@ -30,13 +37,17 @@ export function readTermios ( settings ){
     return bytes;
 }
 
-export function writeTermios ( settings , data ){
+function writeTermios ( settings , data ){
     Native.writeTermios(settings,data);
 }
 
-const cString = ( string ) =>
-    new TextEncoder()
+const cString = ( string ) => {
+
+    const bytes = new TextEncoder()
         .encode(string);
+
+    return new Uint8Array([ ... bytes , 0 ])
+}
 
 
 
@@ -61,23 +72,24 @@ function exception (){
  *  Try to open a serial port.
  */
 
-export async function openPort ( port ){
+async function openPort ( port ){
 
     const bytes = cString(port);
 
-    log(port,bytes);
+    debug('Port:',port)
+    debug('Bytes:',bytes);
 
     const [ file , error ] = await
         retry(Native.openPort,bytes);
 
-    if(file < 0)
-        throw error;
+    if( file < 0 )
+        throw error
 
-    return file;
+    return file
 }
 
 
-export async function readByte ( file , buffer , byteCount ){
+async function readByte ( file , buffer , byteCount ){
 
     const [ readCount , error ] = await
         retry(Native.readByte,file,buffer,byteCount);
@@ -88,7 +100,7 @@ export async function readByte ( file , buffer , byteCount ){
     return readCount;
 }
 
-export async function readBytes ( file , pointer , byteCount ){
+async function readBytes ( file , pointer , byteCount ){
 
     const [ readCount , error ] = await
         retry(Native.readBytes,file,pointer,byteCount);
@@ -104,7 +116,7 @@ export async function readBytes ( file , pointer , byteCount ){
  *  Close a file.
  */
 
-export function closeFile ( file ){
+function closeFile ( file ){
 
     const success = Native.closePort(file) + 1;
 
@@ -129,7 +141,7 @@ export async function portInfo ( file ){
 }
 
 
-export async function availableBytes ( file ){
+async function availableBytes ( file ){
 
     const bytes = new Uint8Array(4);
 
@@ -144,23 +156,23 @@ export async function availableBytes ( file ){
  *  Try to make process exclusive.
  */
 
-export async function exclusive ( file ){
+async function exclusive ( file ){
     await deviceCall(file,Commands.ExclusiveAccess);
 }
 
 
 
-export async function flushInput ( file ){
+async function flushInput ( file ){
     if(await Native.Terminal_flush(file,0) === -1)
         throw exception();
 }
 
-export async function flushOutput ( file ){
+async function flushOutput ( file ){
     if(await Native.Terminal_flush(file,1) === -1)
         throw exception();
 }
 
-export async function flushIO ( file ){
+async function flushIO ( file ){
     if(await Native.Terminal_flush(file,2) === -1)
         throw exception();
 }
@@ -170,7 +182,7 @@ export async function flushIO ( file ){
  *  Try to query a terminals settings.
  */
 
-export async function queryTerminalSettings ( file ){
+async function queryTerminalSettings ( file ){
 
     const
         settings = new Uint8Array(60) ,
@@ -190,7 +202,7 @@ export async function queryTerminalSettings ( file ){
  *  Try to update a terminals settings.
  */
 
-export async function updateTerminalSettings ( file , settings ){
+async function updateTerminalSettings ( file , settings ){
 
     const [ success , error ] = await
         retry(Native.updateTerminalSettings,file,settings);
@@ -206,7 +218,7 @@ export async function updateTerminalSettings ( file , settings ){
  *  IOCTL | Instruct a device driver.
  */
 
-export async function deviceCall ( ... args ){
+async function deviceCall ( ... args ){
     return await command(Native.deviceCall,...args);
 }
 
@@ -215,7 +227,7 @@ export async function deviceCall ( ... args ){
  *  FCNTL | Modify a file descriptor.
  */
 
-export async function modifyFile ( ... args ){
+async function modifyFile ( ... args ){
     return await command(Native.modifyFile,...args);
 }
 
@@ -240,9 +252,11 @@ async function retry ( func , ... parameters ){
     let result , error ;
 
     do {
-        result = await func(...parameters);
-        error = exception();
+
+        result = await func( ... parameters )
+        error = exception()
+
     } while ( result < 0 && error instanceof Interrupted );
 
-    return [ result , error ];
+    return [ result , error ]
 }

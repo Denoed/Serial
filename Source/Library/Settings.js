@@ -10,7 +10,7 @@ import encode from './Encoding/TermiosEncoder.js'
 
 
 const { dlopen , errors } = Deno;
-const { log } = console;
+const { debug } = console;
 
 const { symbols : Native } =
     dlopen(Paths.sharedLibrary,Definitions);
@@ -28,7 +28,7 @@ export default class Settings {
 
         const settings = decode(readTermios(pointer));
 
-        log(settings);
+        // log(settings);
 
         return new Settings(settings,data,pointer);
     }

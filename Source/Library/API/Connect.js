@@ -1,4 +1,6 @@
 
+export { connect }
+
 import {
     flushIO , openPort , closeFile ,
     exclusive , deviceCall , queryTerminalSettings
@@ -11,14 +13,15 @@ import { BaudRate } from '../Helper/BaudRate.ts'
 const { log } = console;
 
 
-export default async function connect ( options = {} ){
+async function connect ( options = {} ){
 
-    if(! 'path' in options)
+    if( ! ( 'path' in options ) )
         throw `Cannot connect to a serial port without a PATH to it.`
 
     const { path } = options;
 
-    const file = await openPort(path);
+    const file = await
+        openPort(path)
 
     let backup;
 

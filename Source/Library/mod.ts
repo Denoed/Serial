@@ -1,6 +1,12 @@
 
+export { FlowControl } from './Helper/FlowControl.ts'
+export { BaudRate } from './Helper/BaudRate.ts'
+export { Parity } from './Helper/Parity.ts'
+
+export { availablePorts , connect }
+
+import { connect as internalConnect } from './API/Connect.js'
 import AvailablePorts from './API/AvailablePorts.js'
-import Connect from './API/Connect.js'
 
 
 /**
@@ -8,8 +14,8 @@ import Connect from './API/Connect.js'
  *  @return An array containing the ports paths.
  */
 
-export async function availablePorts () : Promise < string [] > {
-    return AvailablePorts () as Promise < string [] >;
+function availablePorts (){
+    return AvailablePorts() as Promise < string [] >
 }
 
 
@@ -19,12 +25,10 @@ export async function availablePorts () : Promise < string [] > {
  *  @return A serial object for futher interaction.
  */
 
-export async function connect ( options : object ) : Promise < object > {
-    return Connect ( options ) as Promise < object >;
+function connect ( options : object ){
+    return internalConnect( options ) as Promise < object >
 }
 
 
-export { FlowControl } from './Helper/FlowControl.ts'
-export { BaudRate } from './Helper/BaudRate.ts'
-export { Parity } from './Helper/Parity.ts'
+
 

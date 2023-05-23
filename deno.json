@@ -1,7 +1,8 @@
 
 {
     "tasks" : {
-        "compile" : "bash .github/Tasks/Compile.sh"
+        "compile" : "bash .github/Tasks/Compile.sh" ,
+        "develop" : "bash .github/Tasks/Develop.sh"
     },
 
     "importMap" : "./.github/Imports.json" ,

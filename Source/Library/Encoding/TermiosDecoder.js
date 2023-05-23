@@ -8,7 +8,7 @@ import ControlCharacter from '../Enums/ControlCharacter.js'
 import ControlMask from '../Enums/ControlMask.js'
 import ModemLine from '../Enums/ModemLine.js'
 
-const { log } = console;
+const { debug } = console;
 
 
 function u32 ( bytes ){
@@ -60,13 +60,13 @@ const typeToBitrate = Object.fromEntries(baudrateMapping.map(([ a , b ]) => [ b 
 
 export default function decode ( bytes ){
 
-    log('Bytes',bytes);
+    debug('Bytes',bytes);
 
     const inputFlags = u32(bytes.slice(0,4));
 
     const input = {};
 
-    log(InputFlag);
+    debug('Input Flags',InputFlag);
 
     for(const flag in InputFlag)
         if(!Number.isNaN(parseInt(flag)))

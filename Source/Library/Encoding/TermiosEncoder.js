@@ -10,7 +10,7 @@ import ControlMask from '../Enums/ControlMask.js'
 import ModemLine from '../Enums/ModemLine.js'
 
 
-const { log } = console;
+const { debug } = console;
 
 
 const baudrateMapping = [
@@ -88,11 +88,11 @@ export default function encode ( data ){
     let outputFlags = fromFlags(data.flags.output,OutputFlag);
     let controlFlags = fromFlags(data.flags.control,ControlFlag);
 
-    log('contrrol',controlFlags);
+    debug('Control Flags',controlFlags);
 
     let charSize = data.characterSize - 5;
 
-    log('dfssd',charSize << 4);
+    debug('Char Size',charSize << 4);
 
     controlFlags |= ( charSize << 4 );
 
