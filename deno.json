@@ -1,0 +1,23 @@
+
+{
+    "tasks" : {
+        "compile" : "bash .github/Tasks/Compile.sh"
+    },
+
+    "importMap" : "./.github/Imports.json" ,
+
+    "suggest": {
+
+        "completeFunctionCalls": false,
+        "autoImports": true,
+        "names": true,
+        "paths": true,
+
+        "imports": {
+            "autoDiscover": true,
+            "hosts": {
+                "https://deno.land": true
+            }
+        }
+    }
+}

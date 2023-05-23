@@ -1,0 +1,7 @@
+{
+    "imports" : {
+
+        "Project" : "../../../ProgBS/Repositories/Library/Source/mod.ts" ,
+        "Paths" : "./Paths.js"
+    }
+}
