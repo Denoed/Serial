@@ -89,26 +89,26 @@ async function openPort ( port ){
 }
 
 
-async function readByte ( file , buffer , byteCount ){
+async function readByte ( file , buffer ){
 
     const [ readCount , error ] = await
-        retry(Native.readByte,file,buffer,byteCount);
+        retry(Native.readBytes,file,buffer,1);
 
     if(readCount < 0)
-        throw error;
+        throw error
 
-    return readCount;
+    return readCount
 }
 
-async function readBytes ( file , pointer , byteCount ){
+async function readBytes ( file , buffer , byteCount ){
 
     const [ readCount , error ] = await
-        retry(Native.readBytes,file,pointer,byteCount);
+        retry(Native.readBytes,file,buffer,byteCount)
 
-    if(readCount < 0 && !(error instanceof OperationWouldBlock))
-        throw error;
+    if( readCount < 0 && ! ( error instanceof OperationWouldBlock ) )
+        throw error
 
-    return readCount;
+    return readCount
 }
 
 
@@ -145,10 +145,15 @@ async function availableBytes ( file ){
 
     const bytes = new Uint8Array(4);
 
-    await deviceCall(file,Commands.AvailableBytes,bytes);
+    await deviceCall(file,Commands.AvailableBytes,bytes)
 
-    return new UnsafePointerView(UnsafePointer.of(bytes))
-        .getInt32();
+    const pointer = UnsafePointer
+        .of(bytes)
+
+    const view = new UnsafePointerView(pointer)
+
+    return view
+        .getInt32()
 }
 
 
@@ -235,10 +240,10 @@ async function modifyFile ( ... args ){
 async function command ( command , file , instruction , data ){
 
     const [ success , error ] = await
-        retry(command,file,instruction,data ?? null);
+        retry(command,file,instruction,data ?? null)
 
-    if(success === -1)
-        throw error;
+    if( success === -1 )
+        throw error
 }
 
 

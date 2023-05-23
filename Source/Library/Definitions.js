@@ -33,7 +33,7 @@ export default {
 
     readBytes : {
         nonblocking : true ,
-        parameters : [ 'i32' , 'pointer' , 'u32' ] ,
+        parameters : [ 'i32' , 'buffer' , 'u32' ] ,
         result : 'i32'
     },
 

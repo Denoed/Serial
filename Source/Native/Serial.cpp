@@ -41,7 +41,7 @@ extern "C" {
     }
 
 
-    int readBytes ( File address , uint8_t * buffer , size_t byteCount ){
+    int readBytes ( File address , void * buffer , size_t byteCount ){
         return read( address , buffer , byteCount );
     }
 

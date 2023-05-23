@@ -59,6 +59,10 @@ export default class SerialPort {
         return count > 0;
     }
 
+    async available (){
+        return await availableBytes(this.#pointer)
+    }
+
     async flushInput (){
         await flushI(this.#pointer);
     }
@@ -317,37 +321,46 @@ export default class SerialPort {
 
     async readBytes ( byteCount = 0 , timeout = 1000 ){
 
+        // const bytes = new Uint8Array(byteCount);
+        let bytes = new Uint8Array(0);
 
-        const bytes = new Uint8Array(byteCount);
-
-        let pointer = Deno.UnsafePointer.of(bytes);
+        // let pointer;
 
         let remaining = byteCount;
 
 
         const start = Date.now();
 
-        while(remaining > 0){
+        while ( remaining > 0 ){
 
-            const readCount = await readBs(this.#pointer,pointer,remaining);
+            // pointer = Deno.UnsafePointer
+                // .of(bytes,byteCount - remaining)
 
-            debug('Read Count',readCount,'Pointer',pointer,'Bytes',bytes)
+
+            const temp = new Uint8Array(remaining)
+
+            const readCount = await readBs(this.#pointer,temp,remaining);
+
+            debug('Read Count',readCount)
+            // debug('Pointer',pointer)
+            debug('Bytes',temp)
+
+            bytes = new Uint8Array([ ... bytes , ... temp.slice(0,readCount) ])
 
             remaining -= readCount;
-            pointer += readCount;
 
 
             const delta = Date.now() - start;
 
             if(delta > timeout){
-                reject(new Deno.errors.TimedOut('Data didn\'t arrive in time.'));
+                reject(new Deno.errors.TimedOut(`Data didn't arrive in time.`));
                 return;
             }
 
-            await sleep(this.#transmissionDelay);
+            await sleep(this.#transmissionDelay)
         }
 
-        return bytes;
+        return bytes
     }
 
 

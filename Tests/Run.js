@@ -26,7 +26,7 @@ try {
 
     let tries = 0;
 
-    let a = false;
+    let count = 0;
 
 
     await new Promise((resolve) => {
@@ -34,9 +34,17 @@ try {
 
             tries++;
 
-            a = await port.isDataAvailable();
+            const amount = await port
+                .available();
 
-            if(a || tries > 200){
+
+
+            if( count != amount ){
+                count = amount;
+                tries = 0;
+            }
+
+            if( count > 10 || tries > 1000 ){
                 clearInterval(i);
                 resolve();
             }
@@ -44,19 +52,33 @@ try {
         },10);
     });
 
-    if(a){
-        let buffer = await port.readBytes(12);
+    if( count ){
+
+        log('Count',count)
+
+        const buffer = await port
+            .readBytes(count)
+
         log('Buffer',buffer);
-        const decoder = new TextDecoder();
-        const text = decoder.decode(buffer);
-        log('Text',text);
+
+        const decoder = new TextDecoder
+
+        const text = decoder
+            .decode(buffer)
+
+        log(`Text : '${ text }'`);
     }
 
 } catch ( error ){
-    throw error;
+
+    console.error(error)
+
 } finally {
 
-    log('Closed');
+    log('Closing Port ..')
 
-    await port.close();
+    await port
+        .close()
+
+    log('Closed Port.')
 }
