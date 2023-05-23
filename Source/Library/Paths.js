@@ -1,5 +1,7 @@
 
-import { fromFileUrl , dirname , join } from './Imports.ts'
+import { Path } from './Imports.ts'
+
+const { fromFileUrl , dirname , join } = Path
 
 
 export const project =
