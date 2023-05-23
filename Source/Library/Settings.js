@@ -1,6 +1,6 @@
 
-import { updateTerminalSettings , queryTerminalSettings } from './Native.js'
-import { readTermios , writeTermios } from './Native.js'
+import { updateTerminalSettings , queryTerminalSettings } from './Native.ts'
+import { readTermios , writeTermios } from './Native.ts'
 import { encode } from './Encoding/TermiosEncoder.js'
 
 import decode from './Encoding/TermiosDecoder.js'

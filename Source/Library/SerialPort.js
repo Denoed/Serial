@@ -1,13 +1,13 @@
 
 import { FileCommand , FileStatus , ModemLine } from './Types/mod.ts'
-import { sleep } from './Native.js'
+import { sleep } from './Native.ts'
 
 import Settings from './Settings.js'
 
 import {
     flushIO , flushInput as flushI , modifyFile , deviceCall ,
     closeFile , availableBytes , readBytes as readBs
-} from './Native.js'
+} from './Native.ts'
 
 
 const { debug , log } = console;

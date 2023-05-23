@@ -2,7 +2,7 @@
 export { availablePorts }
 
 import { allPorts } from '../Ports.ts'
-import * as Serial from '../Native.js'
+import * as Serial from '../Native.ts'
 
 
 const { NotFound } = Deno.errors;

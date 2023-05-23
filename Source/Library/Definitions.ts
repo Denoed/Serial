@@ -1,14 +1,14 @@
 
-const method = ( parameters : Array<string> , result : string , isAsync = false ) =>
+
+const method = ( parameters : Array<Deno.NativeType> , result : Deno.NativeResultType , isAsync = false ) =>
     ({ nonblocking : isAsync , parameters , result });
 
 
-const termios_set = ( type : string ) =>
+const termios_set = ( type : Deno.NativeType ) =>
     method([ 'pointer' , type ],'void');
 
-const termios_get = ( type : string ) =>
+const termios_get = ( type : Deno.NativeType ) =>
     method([ 'pointer' ],type);
-
 
 
 export default {
@@ -124,4 +124,5 @@ export default {
         parameters : [ 'pointer' , 'u8' ] ,
         result : 'u8'
     }
-}
+
+} satisfies Deno.ForeignLibraryInterface

@@ -6,7 +6,7 @@ export {
     readBytes , sleep , availableBytes
 }
 
-import { Commands , Errors } from './Types/mod.ts'
+import { FileDescriptor , Commands , Errors } from './Types/mod.ts'
 
 import Definitions from './Definitions.ts'
 import * as Paths from './Paths.ts'
@@ -18,16 +18,16 @@ const { debug } = console;
 
 const { UnsafePointer , UnsafePointerView } = Deno;
 
-const { symbols : Native } =
-    dlopen(Paths.sharedLibrary,Definitions);
+const { symbols : Native } = // @ts-ignore Recursive typings throw error?
+    dlopen(Paths.sharedLibrary,Definitions)
 
 
-async function sleep ( micros ){
-    await Native.usleep(micros);
+async function sleep ( micros : number ){
+    await Native.usleep(micros)
 }
 
 
-function readTermios ( settings ){
+function readTermios ( settings : Deno.PointerValue ){
 
     const bytes = new Uint8Array(57);
 
@@ -36,11 +36,11 @@ function readTermios ( settings ){
     return bytes;
 }
 
-function writeTermios ( settings , data ){
+function writeTermios ( settings : Deno.PointerValue , data : Uint8Array ){
     Native.writeTermios(settings,data);
 }
 
-const cString = ( string ) => {
+const cString = ( string : string ) => {
 
     const bytes = new TextEncoder()
         .encode(string);
@@ -52,7 +52,7 @@ const cString = ( string ) => {
 
 class SystemError extends Error {
 
-    constructor ( error ){
+    constructor ( error : string ){
         super(error)
         this.name = `System Error : ${ error }`
     }
@@ -60,7 +60,7 @@ class SystemError extends Error {
 
 function exception (){
 
-    const error = Native.error();
+    const error = Native.error() as keyof typeof Errors;
 
     return Errors[ error ]
         ?? SystemError
@@ -71,7 +71,7 @@ function exception (){
  *  Try to open a serial port.
  */
 
-async function openPort ( port ){
+async function openPort ( port : string ){
 
     const bytes = cString(port);
 
@@ -88,7 +88,7 @@ async function openPort ( port ){
 }
 
 
-async function readByte ( file , buffer ){
+async function readByte ( file : FileDescriptor , buffer : Uint8Array ){
 
     const [ readCount , error ] = await
         retry(Native.readBytes,file,buffer,1);
@@ -99,7 +99,7 @@ async function readByte ( file , buffer ){
     return readCount
 }
 
-async function readBytes ( file , buffer , byteCount ){
+async function readBytes ( file : FileDescriptor , buffer : Uint8Array , byteCount : number ){
 
     const [ readCount , error ] = await
         retry(Native.readBytes,file,buffer,byteCount)
@@ -115,7 +115,7 @@ async function readBytes ( file , buffer , byteCount ){
  *  Close a file.
  */
 
-function closeFile ( file ){
+function closeFile ( file : FileDescriptor ){
 
     const success = Native.closePort(file) + 1;
 
@@ -130,7 +130,7 @@ function closeFile ( file ){
  *  Try to query port information.
  */
 
-export async function portInfo ( file ){
+export async function portInfo ( file : FileDescriptor ){
 
     const data = new Uint8Array(72);
 
@@ -140,7 +140,7 @@ export async function portInfo ( file ){
 }
 
 
-async function availableBytes ( file ){
+async function availableBytes ( file : FileDescriptor ){
 
     const bytes = new Uint8Array(4);
 
@@ -149,7 +149,7 @@ async function availableBytes ( file ){
     const pointer = UnsafePointer
         .of(bytes)
 
-    const view = new UnsafePointerView(pointer)
+    const view = new UnsafePointerView(pointer!)
 
     return view
         .getInt32()
@@ -160,33 +160,40 @@ async function availableBytes ( file ){
  *  Try to make process exclusive.
  */
 
-async function exclusive ( file ){
+async function exclusive ( file : FileDescriptor ){
     await deviceCall(file,Commands.ExclusiveAccess);
 }
 
 
 
-async function flushInput ( file ){
+async function flushInput ( file : FileDescriptor ){
     if(await Native.Terminal_flush(file,0) === -1)
         throw exception();
 }
 
-async function flushOutput ( file ){
+async function flushOutput ( file : FileDescriptor ){
     if(await Native.Terminal_flush(file,1) === -1)
         throw exception();
 }
 
-async function flushIO ( file ){
+async function flushIO ( file : FileDescriptor ){
     if(await Native.Terminal_flush(file,2) === -1)
         throw exception();
 }
+
+
+type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never
+
+type RestFunction = ( ... args : any ) => any
+
+type SecondPlus < Type extends RestFunction > = DropFirst<Parameters<Type>>
 
 
 /*
  *  Try to query a terminals settings.
  */
 
-async function queryTerminalSettings ( file ){
+async function queryTerminalSettings ( file : FileDescriptor ){
 
     const
         settings = new Uint8Array(60) ,
@@ -206,7 +213,7 @@ async function queryTerminalSettings ( file ){
  *  Try to update a terminals settings.
  */
 
-async function updateTerminalSettings ( file , settings ){
+async function updateTerminalSettings ( file : FileDescriptor , settings : Deno.PointerValue ){
 
     const [ success , error ] = await
         retry(Native.updateTerminalSettings,file,settings);
@@ -222,7 +229,7 @@ async function updateTerminalSettings ( file , settings ){
  *  IOCTL | Instruct a device driver.
  */
 
-async function deviceCall ( ... args ){
+async function deviceCall ( ... args : SecondPlus<typeof command> ){
     return await command(Native.deviceCall,...args);
 }
 
@@ -231,12 +238,12 @@ async function deviceCall ( ... args ){
  *  FCNTL | Modify a file descriptor.
  */
 
-async function modifyFile ( ... args ){
+async function modifyFile ( ... args : SecondPlus<typeof command> ){
     return await command(Native.modifyFile,...args);
 }
 
 
-async function command ( command , file , instruction , data ){
+async function command ( command : Function , file : FileDescriptor , instruction : number , data ?: any ){
 
     const [ success , error ] = await
         retry(command,file,instruction,data ?? null)
@@ -251,7 +258,7 @@ async function command ( command , file , instruction , data ){
  *  function if it is interrupted.
  */
 
-async function retry ( func , ... parameters ){
+async function retry ( func : Function , ... parameters : any ){
 
     let result , error ;
 

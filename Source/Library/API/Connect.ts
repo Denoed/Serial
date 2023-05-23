@@ -1,7 +1,7 @@
 
 export { connect }
 
-import { exclusive , openPort , flushIO } from '../Native.js'
+import { exclusive , openPort , flushIO } from '../Native.ts'
 import { FileDescriptor } from '../Types/mod.ts'
 import { BaudRate } from '../Helper/BaudRate.ts'
 
@@ -17,7 +17,7 @@ async function connect ( options = {} ){
     const { path } = options;
 
     const file = await
-        openPort(path)
+        openPort(path as string)
 
     await exclusive(file)
 

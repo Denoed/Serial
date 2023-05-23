@@ -9,6 +9,7 @@
     "compilerOptions" : {
 
         "lib": [
+            "deno.unstable" ,
             "deno.window" ,
             "ES2022"
         ]
@@ -32,6 +33,14 @@
     },
 
     "lint": {
+
+        "rules": {
+            "exclude": [
+                "no-explicit-any" ,
+                "ban-types"
+            ]
+        },
+
         "include": [
             "Source/Library/"
         ]
