@@ -6,6 +6,16 @@ const { clear , log } = console;
 
 clear();
 
+console.log(Array(20).fill('').join('\n'))
+
+
+const ports = Serial
+    .availablePorts()
+
+for await ( const port of ports )
+    console.log('Port',port)
+
+
 
 const port = await Serial.connect({
     flowControl : null ,
@@ -16,7 +26,9 @@ const port = await Serial.connect({
     path : '/dev/ttyUSB0'
 })
 
+
 log(`Connected to Arduino`)
+
 
 try {
 
@@ -46,7 +58,7 @@ try {
 
             if( count > 10 || tries > 1000 ){
                 clearInterval(i);
-                resolve();
+                resolve(true);
             }
 
         },10);
@@ -71,7 +83,7 @@ try {
 
 } catch ( error ){
 
-    console.error(error)
+    console.error(error,error.stack)
 
 } finally {
 
