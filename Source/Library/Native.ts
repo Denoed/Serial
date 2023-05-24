@@ -14,7 +14,6 @@ import * as Paths from './Paths.ts'
 
 const { dlopen , errors } = Deno;
 const { Interrupted } = errors;
-const { debug } = console;
 
 const { UnsafePointer , UnsafePointerView } = Deno;
 
@@ -58,12 +57,16 @@ class SystemError extends Error {
     }
 }
 
-function exception (){
+
+
+function exception ( ... debug : any ){
+
+    // console.debug('Exception:',debug)
 
     const error = Native.error() as keyof typeof Errors;
 
     return Errors[ error ]
-        ?? SystemError
+        ?? SystemError 
 }
 
 
@@ -75,14 +78,16 @@ async function openPort ( port : string ){
 
     const bytes = cString(port);
 
-    debug('Port:',port)
-    debug('Bytes:',bytes);
+    // debug('Port:',port)
+    // debug('Bytes:',bytes);
 
     const [ file , error ] = await
         retry(Native.openPort,bytes);
 
-    if( file < 0 )
-        throw error
+    if( file < 0 ){
+        // console.debug(`Failed to open port`)
+        throw new error
+    }
 
     return file
 }
@@ -93,8 +98,10 @@ async function readByte ( file : FileDescriptor , buffer : Uint8Array ){
     const [ readCount , error ] = await
         retry(Native.readBytes,file,buffer,1);
 
-    if(readCount < 0)
-        throw error
+    if( readCount < 0 ){
+        console.debug(`Failed to read byte`)
+        throw new error
+    }
 
     return readCount
 }
@@ -104,8 +111,10 @@ async function readBytes ( file : FileDescriptor , buffer : Uint8Array , byteCou
     const [ readCount , error ] = await
         retry(Native.readBytes,file,buffer,byteCount)
 
-    if( readCount < 0 && ! ( error instanceof Deno.errors.WouldBlock ) )
-        throw error
+    if( readCount < 0 && ! ( error instanceof Deno.errors.WouldBlock ) ){
+        console.debug(`Failed to read bytes`)
+        throw new error
+    }
 
     return readCount
 }
@@ -122,7 +131,7 @@ function closeFile ( file : FileDescriptor ){
     if(success)
         return;
 
-    throw exception();
+    throw new (exception(`Failed to close file.`))
 }
 
 
@@ -132,24 +141,27 @@ function closeFile ( file : FileDescriptor ){
 
 export async function portInfo ( file : FileDescriptor ){
 
-    const data = new Uint8Array(72);
+    const data = new 
+        Uint8Array(72)
 
-    await deviceCall(file,Commands.QuerySerial,data);
+    await deviceCall(file,Commands.QuerySerial,data)
 
-    return data;
+    return data
 }
 
 
 async function availableBytes ( file : FileDescriptor ){
 
-    const bytes = new Uint8Array(4);
+    const bytes = new 
+        Uint8Array(4)
 
     await deviceCall(file,Commands.AvailableBytes,bytes)
 
-    const pointer = UnsafePointer
-        .of(bytes)
+    const pointer = 
+        UnsafePointer.of(bytes)
 
-    const view = new UnsafePointerView(pointer!)
+    const view = new 
+        UnsafePointerView(pointer!)
 
     return view
         .getInt32()
@@ -161,28 +173,28 @@ async function availableBytes ( file : FileDescriptor ){
  */
 
 async function exclusive ( file : FileDescriptor ){
-    await deviceCall(file,Commands.ExclusiveAccess);
+    await deviceCall(file,Commands.ExclusiveAccess)
 }
 
 
 
 async function flushInput ( file : FileDescriptor ){
-    if(await Native.Terminal_flush(file,0) === -1)
-        throw exception();
+    if( await Native.Terminal_flush(file,0) === -1 )
+        throw new (exception(`Failed to flush input`))
 }
 
 async function flushOutput ( file : FileDescriptor ){
-    if(await Native.Terminal_flush(file,1) === -1)
-        throw exception();
+    if( await Native.Terminal_flush(file,1) === -1 )
+        throw new (exception(`Failed to flush output`))
 }
 
 async function flushIO ( file : FileDescriptor ){
-    if(await Native.Terminal_flush(file,2) === -1)
-        throw exception();
+    if( await Native.Terminal_flush(file,2) === -1)
+        throw new (exception(`Failed to flush output`))
 }
 
 
-type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never
+type DropFirst< Type extends Array<unknown> > = Type extends [ any , ... infer U ] ? U : never
 
 type RestFunction = ( ... args : any ) => any
 
@@ -200,12 +212,14 @@ async function queryTerminalSettings ( file : FileDescriptor ){
         pointer = UnsafePointer.of(settings) ;
 
     const [ success , error ] = await
-        retry(Native.queryTerminalSettings,file,pointer);
+        retry(Native.queryTerminalSettings,file,pointer)
 
-    if(success === -1)
-        throw error;
+    if( success === -1 ){
+        console.debug(`Failed to query terminal settings`)
+        throw new error
+    }
 
-    return [ settings , pointer ];
+    return [ settings , pointer ]
 }
 
 
@@ -218,10 +232,10 @@ async function updateTerminalSettings ( file : FileDescriptor , settings : Deno.
     const [ success , error ] = await
         retry(Native.updateTerminalSettings,file,settings);
 
-    if(success !== -1)
-        return;
-
-    throw error;
+    if( success === -1 ){
+        console.debug(`Failed to update terminal settings`)
+        throw new error
+    }
 }
 
 
@@ -230,7 +244,7 @@ async function updateTerminalSettings ( file : FileDescriptor , settings : Deno.
  */
 
 async function deviceCall ( ... args : SecondPlus<typeof command> ){
-    return await command(Native.deviceCall,...args);
+    return await command(Native.deviceCall,...args)
 }
 
 
@@ -239,17 +253,21 @@ async function deviceCall ( ... args : SecondPlus<typeof command> ){
  */
 
 async function modifyFile ( ... args : SecondPlus<typeof command> ){
-    return await command(Native.modifyFile,...args);
+    return await command(Native.modifyFile,...args)
 }
 
 
-async function command ( command : Function , file : FileDescriptor , instruction : number , data ?: any ){
+type CommandFunction = ( ... args : [ FileDescriptor , number , any ] ) => any 
+
+async function command ( command : CommandFunction , file : FileDescriptor , instruction : number , data ?: any ){
 
     const [ success , error ] = await
         retry(command,file,instruction,data ?? null)
 
-    if( success === -1 )
-        throw error
+    if( success === -1 ){
+        console.debug(`Failed to execute command`)
+        throw new error
+    }
 }
 
 
@@ -258,16 +276,16 @@ async function command ( command : Function , file : FileDescriptor , instructio
  *  function if it is interrupted.
  */
 
-async function retry ( func : Function , ... parameters : any ){
+async function retry < Parameters extends Array<any> > ( func : ( ... args : Parameters ) => Promise<number> , ... parameters : Parameters ){
 
     let result , error ;
 
     do {
 
         result = await func( ... parameters )
-        error = exception()
+        error = exception(func,...parameters)
 
     } while ( result < 0 && error instanceof Interrupted );
 
-    return [ result , error ]
+    return [ result , error ] as const
 }

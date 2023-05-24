@@ -8,4 +8,4 @@ deno run            \
     --allow-read    \
     --allow-ffi     \
     --allow-write   \
-    Tests/Run.js
+    Tests/Run.ts

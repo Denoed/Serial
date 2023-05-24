@@ -8,6 +8,8 @@
 
     "compilerOptions" : {
 
+        "noImplicitAny": false ,
+
         "lib": [
             "deno.unstable" ,
             "deno.window" ,

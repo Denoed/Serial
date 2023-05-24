@@ -31,6 +31,6 @@ function * serialPorts (){
 
 function * allPorts (){
     yield * serialPorts()
-    yield * acmPorts()
     yield * usbPorts()
+    yield * acmPorts()
 }

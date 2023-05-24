@@ -1,8 +1,8 @@
 
 export { availablePorts }
 
+import { openPort , portInfo , closeFile } from '../Native.ts'
 import { allPorts } from '../Ports.ts'
-import * as Serial from '../Native.ts'
 
 
 const { NotFound } = Deno.errors;
@@ -25,26 +25,34 @@ async function isAvailable ( port : string ){
 
     try {
 
-        const file = await Serial.openPort(port);
+        const file = await 
+            openPort(port)
+
+        let success = false;
 
         try {
 
-            await Serial.portInfo(file);
-            return true;
+            await portInfo(file)
+            
+            success = true;
 
-        } catch (error) {
+        } catch ( exception ){
 
-            error.stack = 'IOCTL Serial Reading Error\n' + error.stack;
-            throw error;
+            exception.stack = 'IOCTL Serial Reading Error\n' + exception.stack;
+
+            throw exception
 
         } finally {
-            Serial.closeFile(file);
+            closeFile(file)
         }
-    } catch (error) {
 
-        if(error instanceof NotFound)
-            return false;
+        return success
 
-        throw error;
+    } catch ( exception ){
+
+        if( exception instanceof NotFound )
+            return false
+
+        throw exception
     }
 }
